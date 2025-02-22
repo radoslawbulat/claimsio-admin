@@ -13,10 +13,34 @@ interface AddDebtorModalProps {
 }
 
 const currencies = [
+  { code: "PLN", symbol: "zł" },
   { code: "USD", symbol: "$" },
   { code: "EUR", symbol: "€" },
   { code: "GBP", symbol: "£" },
   { code: "JPY", symbol: "¥" },
+];
+
+const nationalities = [
+  "Afghan", "Albanian", "Algerian", "American", "Andorran", "Angolan", "Antiguan", "Argentine", "Armenian", "Australian",
+  "Austrian", "Azerbaijani", "Bahamian", "Bahraini", "Bangladeshi", "Barbadian", "Belarusian", "Belgian", "Belizean",
+  "Beninese", "Bhutanese", "Bolivian", "Bosnian", "Botswanan", "Brazilian", "British", "Bruneian", "Bulgarian",
+  "Burkinabe", "Burmese", "Burundian", "Cambodian", "Cameroonian", "Canadian", "Cape Verdean", "Central African",
+  "Chadian", "Chilean", "Chinese", "Colombian", "Comoran", "Congolese", "Costa Rican", "Croatian", "Cuban", "Cypriot",
+  "Czech", "Danish", "Djiboutian", "Dominican", "Dutch", "East Timorese", "Ecuadorian", "Egyptian", "Emirian", "Equatorial Guinean",
+  "Eritrean", "Estonian", "Ethiopian", "Fijian", "Filipino", "Finnish", "French", "Gabonese", "Gambian", "Georgian",
+  "German", "Ghanaian", "Greek", "Grenadian", "Guatemalan", "Guinean", "Guyanese", "Haitian", "Honduran", "Hungarian",
+  "Icelandic", "Indian", "Indonesian", "Iranian", "Iraqi", "Irish", "Israeli", "Italian", "Ivorian", "Jamaican",
+  "Japanese", "Jordanian", "Kazakhstani", "Kenyan", "Kiribati", "Korean", "Kuwaiti", "Kyrgyz", "Laotian", "Latvian",
+  "Lebanese", "Liberian", "Libyan", "Liechtensteiner", "Lithuanian", "Luxembourg", "Macedonian", "Malagasy", "Malawian",
+  "Malaysian", "Maldivian", "Malian", "Maltese", "Marshallese", "Mauritanian", "Mauritian", "Mexican", "Micronesian",
+  "Moldovan", "Monacan", "Mongolian", "Montenegrin", "Moroccan", "Mozambican", "Namibian", "Nauruan", "Nepalese",
+  "New Zealand", "Nicaraguan", "Nigerian", "Norwegian", "Omani", "Pakistani", "Palauan", "Palestinian", "Panamanian",
+  "Papua New Guinean", "Paraguayan", "Peruvian", "Polish", "Portuguese", "Qatari", "Romanian", "Russian", "Rwandan",
+  "Saint Lucian", "Salvadoran", "Samoan", "Saudi", "Senegalese", "Serbian", "Seychellois", "Sierra Leonean",
+  "Singaporean", "Slovak", "Slovenian", "Solomon Islander", "Somali", "South African", "Spanish", "Sri Lankan",
+  "Sudanese", "Surinamese", "Swazi", "Swedish", "Swiss", "Syrian", "Taiwanese", "Tajik", "Tanzanian", "Thai",
+  "Togolese", "Tongan", "Trinidadian", "Tunisian", "Turkish", "Turkmen", "Tuvaluan", "Ugandan", "Ukrainian",
+  "Uruguayan", "Uzbek", "Vanuatuan", "Vatican", "Venezuelan", "Vietnamese", "Yemeni", "Zambian", "Zimbabwean"
 ];
 
 const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
@@ -48,7 +72,18 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
                 <label htmlFor="nationality" className="text-sm font-medium text-gray-700 block mb-1">
                   Nationality
                 </label>
-                <Input id="nationality" placeholder="e.g. American" required />
+                <Select>
+                  <SelectTrigger id="nationality">
+                    <SelectValue placeholder="Select nationality" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[200px]">
+                    {nationalities.map((nationality) => (
+                      <SelectItem key={nationality} value={nationality}>
+                        {nationality}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>
@@ -70,7 +105,7 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
                   <label htmlFor="currency" className="text-sm font-medium text-gray-700 block mb-1">
                     Currency
                   </label>
-                  <Select defaultValue="USD">
+                  <Select defaultValue="PLN">
                     <SelectTrigger id="currency">
                       <SelectValue placeholder="Select currency" />
                     </SelectTrigger>
