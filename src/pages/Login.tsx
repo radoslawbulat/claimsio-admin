@@ -5,17 +5,47 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Lock } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // For demo purposes - replace with actual authentication
-    if (email === "admin@example.com" && password === "admin") {
-      navigate("/dashboard");
+    setIsLoading(true);
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data.user) {
+        toast({
+          title: "Success",
+          description: "Successfully logged in",
+        });
+        navigate("/dashboard");
+      }
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to login",
+      });
+    } finally {
+      setIsLoading(false);
+      // Clear sensitive data
+      setPassword("");
     }
   };
 
@@ -36,26 +66,28 @@ const Login = () => {
                 <label className="text-sm font-medium">Email</label>
                 <Input
                   type="email"
-                  placeholder="admin@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full"
                   required
+                  disabled={isLoading}
+                  autoComplete="email"
                 />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">Password</label>
                 <Input
                   type="password"
-                  placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full"
                   required
+                  disabled={isLoading}
+                  autoComplete="current-password"
                 />
               </div>
-              <Button type="submit" className="w-full">
-                Sign In
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Signing in..." : "Sign In"}
               </Button>
             </form>
           </CardContent>
