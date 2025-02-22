@@ -1,4 +1,3 @@
-
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -16,15 +15,11 @@ interface AddDebtorModalProps {
 
 const currencies = [
   { code: "PLN", symbol: "zł" },
-  { code: "USD", symbol: "$" },
-  { code: "EUR", symbol: "€" },
-  { code: "GBP", symbol: "£" },
-  { code: "JPY", symbol: "¥" },
 ];
 
 const nationalities = [
   "Afghan", "Albanian", "Algerian", "American", "Andorran", "Angolan", "Antiguan", "Argentine", "Armenian", "Australian",
-  "Austrian", "Azerbaijani", "Bahamian", "Bahraini", "Bangladeshi", "Barbadian", "Belarusian", "Belgian", "Belizean",
+  "Austrian", "Azerbaijani", "Bahamian", "Bahraini", "Bangladeshi", "Barbadian", "Belarusian", "Belarusian", "Belgian", "Belizean",
   "Beninese", "Bhutanese", "Bolivian", "Bosnian", "Botswanan", "Brazilian", "British", "Bruneian", "Bulgarian",
   "Burkinabe", "Burmese", "Burundian", "Cambodian", "Cameroonian", "Canadian", "Cape Verdean", "Central African",
   "Chadian", "Chilean", "Chinese", "Colombian", "Comoran", "Congolese", "Costa Rican", "Croatian", "Cuban", "Cypriot",
@@ -125,7 +120,7 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
           debtor_id: debtor.id,
           case_number: `CASE-${Date.now()}`,
           creditor_name: "Your Company", // You might want to make this configurable
-          currency: formData.currency,
+          currency: "PLN",
           debt_amount: Number(formData.amount),
           debt_remaining: Number(formData.amount),
           due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
@@ -380,4 +375,3 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
 };
 
 export default AddDebtorModal;
-
