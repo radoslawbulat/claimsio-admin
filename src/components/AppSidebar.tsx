@@ -5,7 +5,6 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -54,8 +53,10 @@ const AppSidebar = () => {
   return (
     <Sidebar className="border-r">
       <SidebarContent>
+        <div className="flex items-center h-14 px-4 border-b">
+          <h1 className="text-2xl font-bold">Claimsio</h1>
+        </div>
         <SidebarGroup>
-          <SidebarGroupLabel>Menu</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
@@ -80,7 +81,6 @@ const AppSidebar = () => {
         </SidebarGroup>
 
         <SidebarGroup className="mt-auto">
-          <SidebarGroupLabel>System</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
@@ -116,3 +116,4 @@ const AppSidebar = () => {
 };
 
 export default AppSidebar;
+
