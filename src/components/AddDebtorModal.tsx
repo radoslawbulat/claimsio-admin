@@ -1,4 +1,3 @@
-
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -169,7 +168,7 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
               </div>
             </div>
 
-            <div className="flex justify-end gap-4 pt-4">
+            <div className="flex justify-end gap-4 pt-4 pb-12">
               <Button type="button" variant="outline" onClick={onClose}>
                 Cancel
               </Button>
@@ -185,4 +184,3 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
 };
 
 export default AddDebtorModal;
-
