@@ -8,6 +8,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import {
   LayoutDashboard,
@@ -53,8 +54,9 @@ const AppSidebar = () => {
   return (
     <Sidebar className="border-r">
       <SidebarContent>
-        <div className="flex items-center h-14 px-4 border-b">
+        <div className="flex items-center justify-between h-14 px-4 border-b">
           <h1 className="text-2xl font-bold">Claimsio</h1>
+          <SidebarTrigger />
         </div>
         <SidebarGroup>
           <SidebarGroupContent>
