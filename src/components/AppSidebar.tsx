@@ -5,10 +5,10 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import {
   LayoutDashboard,
@@ -18,9 +18,13 @@ import {
   CreditCard,
   Settings,
   LogOut,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 const menuItems = [
   { title: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
@@ -33,6 +37,7 @@ const menuItems = [
 const AppSidebar = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { state, toggleSidebar } = useSidebar();
 
   const handleLogout = async () => {
     try {
@@ -54,8 +59,33 @@ const AppSidebar = () => {
   return (
     <Sidebar className="border-r">
       <SidebarContent>
+        {/* Logo and Toggle Section */}
+        <div className="p-4 flex items-center justify-between">
+          <div className={cn(
+            "flex items-center gap-3 transition-opacity duration-300",
+            state === "collapsed" && "opacity-0"
+          )}>
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+              <span className="text-primary-foreground font-bold">C</span>
+            </div>
+            <span className="font-bold text-2xl">Claimsio</span>
+          </div>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={toggleSidebar}
+            className="hover:bg-accent"
+          >
+            {state === "collapsed" ? (
+              <ChevronRight className="h-4 w-4" />
+            ) : (
+              <ChevronLeft className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
+
+        {/* Main Navigation Menu */}
         <SidebarGroup>
-          <SidebarGroupLabel>Menu</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
@@ -64,13 +94,15 @@ const AppSidebar = () => {
                     <NavLink
                       to={item.path}
                       className={({ isActive }) =>
-                        `flex items-center gap-2 w-full ${
+                        `flex items-center gap-3 w-full ${
                           isActive ? "text-primary" : "text-muted-foreground"
                         }`
                       }
                     >
                       <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
+                      <span className="transition-opacity duration-300">
+                        {item.title}
+                      </span>
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -79,8 +111,8 @@ const AppSidebar = () => {
           </SidebarGroupContent>
         </SidebarGroup>
 
+        {/* System Navigation */}
         <SidebarGroup className="mt-auto">
-          <SidebarGroupLabel>System</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
@@ -88,23 +120,23 @@ const AppSidebar = () => {
                   <NavLink
                     to="/settings"
                     className={({ isActive }) =>
-                      `flex items-center gap-2 w-full ${
+                      `flex items-center gap-3 w-full ${
                         isActive ? "text-primary" : "text-muted-foreground"
                       }`
                     }
                   >
                     <Settings className="h-4 w-4" />
-                    <span>Settings</span>
+                    <span className="transition-opacity duration-300">Settings</span>
                   </NavLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
                   onClick={handleLogout}
-                  className="flex items-center gap-2 w-full text-destructive hover:text-destructive/90"
+                  className="flex items-center gap-3 w-full text-destructive hover:text-destructive/90"
                 >
                   <LogOut className="h-4 w-4" />
-                  <span>Logout</span>
+                  <span className="transition-opacity duration-300">Logout</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -116,3 +148,4 @@ const AppSidebar = () => {
 };
 
 export default AppSidebar;
+
