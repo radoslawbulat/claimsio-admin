@@ -364,3 +364,4 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
 };
 
 export default AddDebtorModal;
+
