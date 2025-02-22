@@ -1,0 +1,7 @@
+
+project_id = "wgrthafbdhesqyapbskd"
+[kv]
+[db]
+[analytics]
+[auth]
+verify_jwt = false

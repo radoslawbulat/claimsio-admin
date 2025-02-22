@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
@@ -5,20 +6,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import AddDebtorModal from "@/components/AddDebtorModal";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 
-const mockData = {
-  metrics: {
-    portfolioValue: 125000000,
-    recoveredValue: 45750000,
-    recoveryRate: 36.6,
-    activeCases: 15234
-  },
-  aging: [
-    { bracket: "0-30 days", amount: 35000000 },
-    { bracket: "31-60 days", amount: 28000000 },
-    { bracket: "61-90 days", amount: 42000000 },
-    { bracket: "90+ days", amount: 20000000 }
-  ]
+const fetchAnalytics = async () => {
+  const { data, error } = await supabase.functions.invoke('get-analytics');
+  if (error) throw error;
+  return data;
 };
 
 const formatCurrency = (value: number) => {
@@ -34,8 +28,20 @@ const formatNumber = (value: number) => {
   return new Intl.NumberFormat('en-US').format(value);
 };
 
+const mockAgingData = [
+  { bracket: "0-30 days", amount: 35000000 },
+  { bracket: "31-60 days", amount: 28000000 },
+  { bracket: "61-90 days", amount: 42000000 },
+  { bracket: "90+ days", amount: 20000000 }
+];
+
 const Dashboard = () => {
   const [isAddDebtorOpen, setIsAddDebtorOpen] = useState(false);
+
+  const { data: analytics, isLoading, error } = useQuery({
+    queryKey: ['analytics'],
+    queryFn: fetchAnalytics
+  });
 
   return (
     <div className="space-y-8 animate-fade-in bg-[#f9fafb] min-h-screen p-6">
@@ -74,7 +80,7 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {formatCurrency(mockData.metrics.portfolioValue)}
+              {isLoading ? "Loading..." : error ? "Error" : formatCurrency(analytics.portfolioValue)}
             </div>
           </CardContent>
         </Card>
@@ -87,7 +93,7 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {formatCurrency(mockData.metrics.recoveredValue)}
+              {isLoading ? "Loading..." : error ? "Error" : formatCurrency(analytics.recoveredValue)}
             </div>
           </CardContent>
         </Card>
@@ -100,7 +106,7 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {mockData.metrics.recoveryRate}%
+              {isLoading ? "Loading..." : error ? "Error" : `${analytics.recoveryRate}%`}
             </div>
           </CardContent>
         </Card>
@@ -113,7 +119,7 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {formatNumber(mockData.metrics.activeCases)}
+              {isLoading ? "Loading..." : error ? "Error" : formatNumber(analytics.activeCases)}
             </div>
           </CardContent>
         </Card>
@@ -127,7 +133,7 @@ const Dashboard = () => {
         <CardContent>
           <div className="h-[400px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={mockData.aging} margin={{ top: 10, right: 30, left: 40, bottom: 20 }}>
+              <BarChart data={mockAgingData} margin={{ top: 10, right: 30, left: 40, bottom: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis 
                   dataKey="bracket" 
