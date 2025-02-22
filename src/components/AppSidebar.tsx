@@ -62,7 +62,7 @@ const AppSidebar = () => {
         {/* Logo and Toggle Section */}
         <div className="p-4 flex items-center justify-between">
           <div className={cn(
-            "flex items-center gap-3 transition-opacity duration-300",
+            "flex items-center gap-3",
             state === "collapsed" && "opacity-0"
           )}>
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
@@ -90,19 +90,18 @@ const AppSidebar = () => {
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton tooltip={state === "collapsed" ? item.title : undefined} asChild>
                     <NavLink
                       to={item.path}
                       className={({ isActive }) =>
-                        `flex items-center gap-3 w-full ${
+                        cn(
+                          "flex items-center gap-3 w-full",
                           isActive ? "text-primary" : "text-muted-foreground"
-                        }`
+                        )
                       }
                     >
-                      <item.icon className="h-4 w-4" />
-                      <span className="transition-opacity duration-300">
-                        {item.title}
-                      </span>
+                      <item.icon className="h-4 w-4 shrink-0" />
+                      <span>{item.title}</span>
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -116,27 +115,29 @@ const AppSidebar = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild>
+                <SidebarMenuButton tooltip={state === "collapsed" ? "Settings" : undefined} asChild>
                   <NavLink
                     to="/settings"
                     className={({ isActive }) =>
-                      `flex items-center gap-3 w-full ${
+                      cn(
+                        "flex items-center gap-3 w-full",
                         isActive ? "text-primary" : "text-muted-foreground"
-                      }`
+                      )
                     }
                   >
-                    <Settings className="h-4 w-4" />
-                    <span className="transition-opacity duration-300">Settings</span>
+                    <Settings className="h-4 w-4 shrink-0" />
+                    <span>Settings</span>
                   </NavLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton
+                <SidebarMenuButton 
+                  tooltip={state === "collapsed" ? "Logout" : undefined}
                   onClick={handleLogout}
                   className="flex items-center gap-3 w-full text-destructive hover:text-destructive/90"
                 >
-                  <LogOut className="h-4 w-4" />
-                  <span className="transition-opacity duration-300">Logout</span>
+                  <LogOut className="h-4 w-4 shrink-0" />
+                  <span>Logout</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
