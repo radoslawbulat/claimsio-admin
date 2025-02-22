@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, Line, ComposedChart } from "recharts";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
@@ -22,16 +22,16 @@ const fetchAgingData = async () => {
 };
 
 const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat('pl-PL', {
     style: 'currency',
-    currency: 'USD',
+    currency: 'PLN',
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
   }).format(value);
 };
 
 const formatNumber = (value: number) => {
-  return new Intl.NumberFormat('en-US').format(value);
+  return new Intl.NumberFormat('pl-PL').format(value);
 };
 
 const Dashboard = () => {
@@ -137,7 +137,7 @@ const Dashboard = () => {
         <CardContent>
           <div className="h-[400px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart 
+              <ComposedChart 
                 data={isLoadingAging ? [] : agingData} 
                 margin={{ top: 10, right: 30, left: 40, bottom: 20 }}
               >
@@ -147,10 +147,21 @@ const Dashboard = () => {
                   tick={{ fill: '#86888C' }}
                 />
                 <YAxis 
+                  yAxisId="left"
                   tick={{ fill: '#86888C' }}
+                  tickFormatter={(value) => formatCurrency(value)}
+                />
+                <YAxis 
+                  yAxisId="right"
+                  orientation="right"
+                  tick={{ fill: '#86888C' }}
+                  tickFormatter={(value) => formatNumber(value)}
                 />
                 <Tooltip 
-                  formatter={(value: number) => [formatNumber(value), "Cases"]}
+                  formatter={(value: number, name: string) => {
+                    if (name === "value") return [formatCurrency(value), "Total Value"];
+                    return [formatNumber(value), "Number of Cases"];
+                  }}
                   labelStyle={{ color: '#2A2B2E' }}
                   contentStyle={{ 
                     backgroundColor: 'white',
@@ -159,11 +170,22 @@ const Dashboard = () => {
                   }}
                 />
                 <Bar 
-                  dataKey="amount" 
+                  dataKey="value" 
                   fill="#3b82f6"
                   radius={[4, 4, 0, 0]}
+                  yAxisId="left"
+                  name="value"
                 />
-              </BarChart>
+                <Line
+                  type="monotone"
+                  dataKey="count"
+                  stroke="#ef4444"
+                  strokeWidth={2}
+                  yAxisId="right"
+                  name="count"
+                  dot={{ fill: '#ef4444' }}
+                />
+              </ComposedChart>
             </ResponsiveContainer>
           </div>
         </CardContent>
@@ -178,4 +200,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
