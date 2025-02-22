@@ -1,6 +1,9 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { PlusCircle } from "lucide-react";
 
 const mockData = {
   metrics: {
@@ -33,6 +36,28 @@ const formatNumber = (value: number) => {
 const Dashboard = () => {
   return (
     <div className="space-y-8 animate-fade-in bg-[#f9fafb] min-h-screen p-6">
+      {/* Header Section */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-900">Performance</h1>
+        </div>
+        <div className="flex items-center gap-4">
+          <Select defaultValue="all">
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select portfolio" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Portfolios</SelectItem>
+              <SelectItem value="npl">NPL</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button className="gap-2">
+            <PlusCircle size={20} />
+            Add a debtor
+          </Button>
+        </div>
+      </div>
+
       {/* Core Metrics Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card className="border-none shadow-md bg-white">
