@@ -15,6 +15,12 @@ const fetchAnalytics = async () => {
   return data;
 };
 
+const fetchAgingData = async () => {
+  const { data, error } = await supabase.functions.invoke('get-aging-data');
+  if (error) throw error;
+  return data;
+};
+
 const formatCurrency = (value: number) => {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -28,19 +34,17 @@ const formatNumber = (value: number) => {
   return new Intl.NumberFormat('en-US').format(value);
 };
 
-const mockAgingData = [
-  { bracket: "0-30 days", amount: 35000000 },
-  { bracket: "31-60 days", amount: 28000000 },
-  { bracket: "61-90 days", amount: 42000000 },
-  { bracket: "90+ days", amount: 20000000 }
-];
-
 const Dashboard = () => {
   const [isAddDebtorOpen, setIsAddDebtorOpen] = useState(false);
 
   const { data: analytics, isLoading, error } = useQuery({
     queryKey: ['analytics'],
     queryFn: fetchAnalytics
+  });
+
+  const { data: agingData, isLoading: isLoadingAging, error: agingError } = useQuery({
+    queryKey: ['aging-data'],
+    queryFn: fetchAgingData
   });
 
   return (
@@ -133,7 +137,10 @@ const Dashboard = () => {
         <CardContent>
           <div className="h-[400px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={mockAgingData} margin={{ top: 10, right: 30, left: 40, bottom: 20 }}>
+              <BarChart 
+                data={isLoadingAging ? [] : agingData} 
+                margin={{ top: 10, right: 30, left: 40, bottom: 20 }}
+              >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis 
                   dataKey="bracket" 
@@ -141,10 +148,9 @@ const Dashboard = () => {
                 />
                 <YAxis 
                   tick={{ fill: '#86888C' }}
-                  tickFormatter={(value) => formatCurrency(value)}
                 />
                 <Tooltip 
-                  formatter={(value: number) => [formatCurrency(value), "Amount"]}
+                  formatter={(value: number) => [formatNumber(value), "Cases"]}
                   labelStyle={{ color: '#2A2B2E' }}
                   contentStyle={{ 
                     backgroundColor: 'white',
@@ -172,3 +178,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+

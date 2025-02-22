@@ -5,3 +5,4 @@ project_id = "wgrthafbdhesqyapbskd"
 [analytics]
 [auth]
 verify_jwt = false
+

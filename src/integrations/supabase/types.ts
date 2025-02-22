@@ -55,6 +55,7 @@ export type Database = {
           creditor_name: string
           currency: string
           debt_amount: number
+          debt_date: string | null
           debt_remaining: number
           debtor_id: string | null
           due_date: string
@@ -72,6 +73,7 @@ export type Database = {
           creditor_name: string
           currency: string
           debt_amount: number
+          debt_date?: string | null
           debt_remaining: number
           debtor_id?: string | null
           due_date: string
@@ -89,6 +91,7 @@ export type Database = {
           creditor_name?: string
           currency?: string
           debt_amount?: number
+          debt_date?: string | null
           debt_remaining?: number
           debtor_id?: string | null
           due_date?: string
@@ -109,10 +112,11 @@ export type Database = {
           },
         ]
       }
-      commss: {
+      comms: {
         Row: {
           case_id: string
           comms_type: Database["public"]["Enums"]["comms_type"]
+          content: string | null
           created_at: string
           direction: Database["public"]["Enums"]["comms_direction"]
           id: string
@@ -122,6 +126,7 @@ export type Database = {
         Insert: {
           case_id: string
           comms_type: Database["public"]["Enums"]["comms_type"]
+          content?: string | null
           created_at?: string
           direction: Database["public"]["Enums"]["comms_direction"]
           id?: string
@@ -131,6 +136,7 @@ export type Database = {
         Update: {
           case_id?: string
           comms_type?: Database["public"]["Enums"]["comms_type"]
+          content?: string | null
           created_at?: string
           direction?: Database["public"]["Enums"]["comms_direction"]
           id?: string
@@ -269,12 +275,7 @@ export type Database = {
     }
     Enums: {
       case_priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT"
-      case_status:
-        | "NEW"
-        | "IN_PROGRESS"
-        | "WAITING_FOR_PAYMENT"
-        | "PAID"
-        | "CLOSED"
+      case_status: "ACTIVE" | "CLOSED"
       comms_direction: "inbound" | "outbound"
       comms_status: "pending" | "completed" | "failed" | "cancelled"
       comms_type: "call" | "email" | "sms"
