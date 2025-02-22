@@ -19,14 +19,21 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // Get all active cases
+    console.log('Fetching active cases...')
+
+    // Get all active cases - using 'ACTIVE' instead of 'NEW'
     const { data: cases, error } = await supabase
       .from('cases')
       .select('created_at')
-      .eq('status', 'NEW')
+      .eq('status', 'ACTIVE')
       .order('created_at')
 
-    if (error) throw error
+    if (error) {
+      console.error('Database error:', error)
+      throw error
+    }
+
+    console.log(`Found ${cases?.length || 0} active cases`)
 
     const now = new Date()
     const agingBrackets = {
@@ -36,7 +43,7 @@ serve(async (req) => {
       '90+ days': 0
     }
 
-    cases.forEach(caseItem => {
+    cases?.forEach(caseItem => {
       const createdAt = new Date(caseItem.created_at)
       const daysDiff = Math.floor((now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24))
 
@@ -82,4 +89,3 @@ serve(async (req) => {
     )
   }
 })
-
