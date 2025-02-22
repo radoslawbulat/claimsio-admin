@@ -54,9 +54,9 @@ const AppSidebar = () => {
   return (
     <Sidebar className="border-r">
       <SidebarContent>
-        <div className="flex items-center justify-between h-14 px-4 border-b">
-          <h1 className="text-2xl font-bold">Claimsio</h1>
-          <SidebarTrigger />
+        <div className="flex items-center h-14 px-4 border-b">
+          <h1 className="text-2xl font-bold truncate">Claimsio</h1>
+          <SidebarTrigger className="ml-auto shrink-0" />
         </div>
         <SidebarGroup>
           <SidebarGroupContent>
@@ -72,7 +72,7 @@ const AppSidebar = () => {
                         }`
                       }
                     >
-                      <item.icon className="h-4 w-4" />
+                      <item.icon className="h-4 w-4 shrink-0" />
                       <span>{item.title}</span>
                     </NavLink>
                   </SidebarMenuButton>
@@ -95,7 +95,7 @@ const AppSidebar = () => {
                       }`
                     }
                   >
-                    <Settings className="h-4 w-4" />
+                    <Settings className="h-4 w-4 shrink-0" />
                     <span>Settings</span>
                   </NavLink>
                 </SidebarMenuButton>
@@ -105,7 +105,7 @@ const AppSidebar = () => {
                   onClick={handleLogout}
                   className="flex items-center gap-2 w-full text-destructive hover:text-destructive/90"
                 >
-                  <LogOut className="h-4 w-4" />
+                  <LogOut className="h-4 w-4 shrink-0" />
                   <span>Logout</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -118,4 +118,3 @@ const AppSidebar = () => {
 };
 
 export default AppSidebar;
-
