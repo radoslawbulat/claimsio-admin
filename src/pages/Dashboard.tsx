@@ -1,9 +1,10 @@
-
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
+import AddDebtorModal from "@/components/AddDebtorModal";
 
 const mockData = {
   metrics: {
@@ -34,6 +35,8 @@ const formatNumber = (value: number) => {
 };
 
 const Dashboard = () => {
+  const [isAddDebtorOpen, setIsAddDebtorOpen] = useState(false);
+
   return (
     <div className="space-y-8 animate-fade-in bg-[#f9fafb] min-h-screen p-6">
       {/* Header Section */}
@@ -51,7 +54,10 @@ const Dashboard = () => {
               <SelectItem value="npl">NPL</SelectItem>
             </SelectContent>
           </Select>
-          <Button className="gap-2">
+          <Button 
+            className="gap-2"
+            onClick={() => setIsAddDebtorOpen(true)}
+          >
             <PlusCircle size={20} />
             Add a debtor
           </Button>
@@ -150,6 +156,11 @@ const Dashboard = () => {
           </div>
         </CardContent>
       </Card>
+
+      <AddDebtorModal 
+        isOpen={isAddDebtorOpen}
+        onClose={() => setIsAddDebtorOpen(false)}
+      />
     </div>
   );
 };
