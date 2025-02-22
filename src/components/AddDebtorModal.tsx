@@ -1,3 +1,4 @@
+
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -5,6 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { UploadCloud } from "lucide-react";
+import { useState, useRef } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AddDebtorModalProps {
   isOpen: boolean;
@@ -43,12 +46,139 @@ const nationalities = [
 ];
 
 const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
-  const handleSubmit = (e: React.FormEvent) => {
+  const [loading, setLoading] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [formData, setFormData] = useState({
+    fullName: "",
+    nationality: "",
+    email: "",
+    phone: "",
+    currency: "PLN",
+    amount: "",
+    description: "",
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handleSelectChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    setSelectedFiles((prevFiles) => [...prevFiles, ...files]);
+  };
+
+  const removeFile = (index: number) => {
+    setSelectedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Debtor added successfully", {
-      duration: 3000,
-    });
-    onClose();
+    setLoading(true);
+
+    try {
+      // Check if debtor with same phone number exists
+      const { data: existingDebtor } = await supabase
+        .from("debtors")
+        .select("id")
+        .eq("phone_number", formData.phone)
+        .maybeSingle();
+
+      if (existingDebtor) {
+        toast.error("A debtor with this phone number already exists");
+        return;
+      }
+
+      // Create new debtor
+      const names = formData.fullName.split(" ");
+      const firstName = names[0];
+      const lastName = names.slice(1).join(" ");
+
+      const { data: debtor, error: debtorError } = await supabase
+        .from("debtors")
+        .insert({
+          first_name: firstName,
+          last_name: lastName,
+          email: formData.email,
+          phone_number: formData.phone,
+          total_debt_amount: Number(formData.amount),
+          total_debt_remaining: Number(formData.amount),
+        })
+        .select()
+        .single();
+
+      if (debtorError) throw debtorError;
+
+      // Create new case
+      const { data: newCase, error: caseError } = await supabase
+        .from("cases")
+        .insert({
+          debtor_id: debtor.id,
+          case_number: `CASE-${Date.now()}`,
+          creditor_name: "Your Company", // You might want to make this configurable
+          currency: formData.currency,
+          debt_amount: Number(formData.amount),
+          debt_remaining: Number(formData.amount),
+          due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
+          case_description: formData.description,
+        })
+        .select()
+        .single();
+
+      if (caseError) throw caseError;
+
+      // Upload attachments if any
+      if (selectedFiles.length > 0) {
+        for (const file of selectedFiles) {
+          const fileExt = file.name.split(".").pop();
+          const filePath = `${newCase.id}/${crypto.randomUUID()}.${fileExt}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from("case-attachments")
+            .upload(filePath, file);
+
+          if (uploadError) throw uploadError;
+
+          // Create attachment record
+          const { error: attachmentError } = await supabase
+            .from("case_attachments")
+            .insert({
+              case_id: newCase.id,
+              file_name: file.name,
+              storage_path: filePath,
+              description: `Attachment for case ${newCase.case_number}`,
+            });
+
+          if (attachmentError) throw attachmentError;
+        }
+      }
+
+      toast.success("Debtor added successfully");
+      onClose();
+      
+      // Reset form
+      setFormData({
+        fullName: "",
+        nationality: "",
+        email: "",
+        phone: "",
+        currency: "PLN",
+        amount: "",
+        description: "",
+      });
+      setSelectedFiles([]);
+      
+    } catch (error) {
+      console.error("Error adding debtor:", error);
+      toast.error("Failed to add debtor");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -61,17 +191,23 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
           <form onSubmit={handleSubmit} className="space-y-6 mt-6">
             <div className="space-y-4">
               <div>
-                <label htmlFor="name" className="text-sm font-medium text-gray-700 block mb-1">
+                <label htmlFor="fullName" className="text-sm font-medium text-gray-700 block mb-1">
                   Full Name
                 </label>
-                <Input id="name" placeholder="John Doe" required />
+                <Input
+                  id="fullName"
+                  placeholder="John Doe"
+                  required
+                  value={formData.fullName}
+                  onChange={handleInputChange}
+                />
               </div>
 
               <div>
                 <label htmlFor="nationality" className="text-sm font-medium text-gray-700 block mb-1">
                   Nationality
                 </label>
-                <Select>
+                <Select value={formData.nationality} onValueChange={(value) => handleSelectChange("nationality", value)}>
                   <SelectTrigger id="nationality">
                     <SelectValue placeholder="Select nationality" />
                   </SelectTrigger>
@@ -89,14 +225,28 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
                 <label htmlFor="email" className="text-sm font-medium text-gray-700 block mb-1">
                   Email
                 </label>
-                <Input id="email" type="email" placeholder="john@example.com" required />
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="john@example.com"
+                  required
+                  value={formData.email}
+                  onChange={handleInputChange}
+                />
               </div>
 
               <div>
                 <label htmlFor="phone" className="text-sm font-medium text-gray-700 block mb-1">
                   Phone Number
                 </label>
-                <Input id="phone" type="tel" placeholder="+1 (555) 000-0000" required />
+                <Input
+                  id="phone"
+                  type="tel"
+                  placeholder="+1 (555) 000-0000"
+                  required
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -104,7 +254,7 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
                   <label htmlFor="currency" className="text-sm font-medium text-gray-700 block mb-1">
                     Currency
                   </label>
-                  <Select defaultValue="PLN">
+                  <Select value={formData.currency} onValueChange={(value) => handleSelectChange("currency", value)}>
                     <SelectTrigger id="currency">
                       <SelectValue placeholder="Select currency" />
                     </SelectTrigger>
@@ -121,7 +271,16 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
                   <label htmlFor="amount" className="text-sm font-medium text-gray-700 block mb-1">
                     Debt Amount
                   </label>
-                  <Input id="amount" type="number" min="0" step="0.01" placeholder="10000.00" required />
+                  <Input
+                    id="amount"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="10000.00"
+                    required
+                    value={formData.amount}
+                    onChange={handleInputChange}
+                  />
                 </div>
               </div>
 
@@ -134,6 +293,8 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
                   placeholder="Enter details about the debt..." 
                   className="resize-none" 
                   rows={4}
+                  value={formData.description}
+                  onChange={handleInputChange}
                 />
               </div>
 
@@ -155,6 +316,8 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
                             className="sr-only"
                             multiple
                             accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+                            onChange={handleFileChange}
+                            ref={fileInputRef}
                           />
                         </label>
                         <span className="pl-1">or drag and drop</span>
@@ -164,16 +327,33 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
                       </p>
                     </div>
                   </div>
+                  {selectedFiles.length > 0 && (
+                    <div className="mt-4 space-y-2">
+                      {selectedFiles.map((file, index) => (
+                        <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                          <span className="text-sm text-gray-600">{file.name}</span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeFile(index)}
+                          >
+                            Remove
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
 
             <div className="flex justify-end gap-4 pt-4 pb-12">
-              <Button type="button" variant="outline" onClick={onClose}>
+              <Button type="button" variant="outline" onClick={onClose} disabled={loading}>
                 Cancel
               </Button>
-              <Button type="submit">
-                Add Debtor
+              <Button type="submit" disabled={loading}>
+                {loading ? "Adding..." : "Add Debtor"}
               </Button>
             </div>
           </form>
