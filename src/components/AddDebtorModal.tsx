@@ -112,7 +112,11 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
         .select()
         .single();
 
-      if (debtorError) throw debtorError;
+      if (debtorError) {
+        console.error("Error creating debtor:", debtorError);
+        toast.error("Failed to create debtor");
+        return;
+      }
 
       // Create new case
       const { data: newCase, error: caseError } = await supabase
@@ -130,7 +134,11 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
         .select()
         .single();
 
-      if (caseError) throw caseError;
+      if (caseError) {
+        console.error("Error creating case:", caseError);
+        toast.error("Failed to create case");
+        return;
+      }
 
       // Upload attachments if any
       if (selectedFiles.length > 0) {
@@ -142,7 +150,11 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
             .from("case-attachments")
             .upload(filePath, file);
 
-          if (uploadError) throw uploadError;
+          if (uploadError) {
+            console.error("Error uploading file:", uploadError);
+            toast.error(`Failed to upload file: ${file.name}`);
+            continue;
+          }
 
           // Create attachment record
           const { error: attachmentError } = await supabase
@@ -154,7 +166,11 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
               description: `Attachment for case ${newCase.case_number}`,
             });
 
-          if (attachmentError) throw attachmentError;
+          if (attachmentError) {
+            console.error("Error creating attachment record:", attachmentError);
+            toast.error(`Failed to record file: ${file.name}`);
+            continue;
+          }
         }
       }
 
