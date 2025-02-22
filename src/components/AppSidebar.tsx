@@ -8,7 +8,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import {
   LayoutDashboard,
@@ -55,8 +54,7 @@ const AppSidebar = () => {
     <Sidebar className="border-r">
       <SidebarContent>
         <div className="flex items-center h-14 px-4 border-b">
-          <h1 className="text-2xl font-bold truncate">Claimsio</h1>
-          <SidebarTrigger className="ml-auto shrink-0" />
+          <h1 className="text-2xl font-bold">Claimsio</h1>
         </div>
         <SidebarGroup>
           <SidebarGroupContent>
@@ -72,7 +70,7 @@ const AppSidebar = () => {
                         }`
                       }
                     >
-                      <item.icon className="h-4 w-4 shrink-0" />
+                      <item.icon className="h-4 w-4" />
                       <span>{item.title}</span>
                     </NavLink>
                   </SidebarMenuButton>
@@ -95,7 +93,7 @@ const AppSidebar = () => {
                       }`
                     }
                   >
-                    <Settings className="h-4 w-4 shrink-0" />
+                    <Settings className="h-4 w-4" />
                     <span>Settings</span>
                   </NavLink>
                 </SidebarMenuButton>
@@ -105,7 +103,7 @@ const AppSidebar = () => {
                   onClick={handleLogout}
                   className="flex items-center gap-2 w-full text-destructive hover:text-destructive/90"
                 >
-                  <LogOut className="h-4 w-4 shrink-0" />
+                  <LogOut className="h-4 w-4" />
                   <span>Logout</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -118,3 +116,4 @@ const AppSidebar = () => {
 };
 
 export default AppSidebar;
+
