@@ -22,9 +22,9 @@ serve(async (req) => {
 
     const { data: cases, error } = await supabase
       .from('cases')
-      .select('created_at, debt_amount')
+      .select('due_date, debt_remaining')
       .eq('status', 'ACTIVE')
-      .order('created_at')
+      .order('due_date')
 
     if (error) {
       console.error('Database error:', error)
@@ -35,28 +35,32 @@ serve(async (req) => {
 
     const now = new Date()
     const agingBrackets = {
-      '0-30 days': { count: 0, value: 0 },
+      'Not Due': { count: 0, value: 0 },
+      '1-30 days': { count: 0, value: 0 },
       '31-60 days': { count: 0, value: 0 },
       '61-90 days': { count: 0, value: 0 },
       '90+ days': { count: 0, value: 0 }
     }
 
     cases?.forEach(caseItem => {
-      const createdAt = new Date(caseItem.created_at)
-      const daysDiff = Math.floor((now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24))
+      const dueDate = new Date(caseItem.due_date)
+      const daysDiff = Math.floor((now.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24))
 
-      if (daysDiff <= 30) {
-        agingBrackets['0-30 days'].count++
-        agingBrackets['0-30 days'].value += caseItem.debt_amount
+      if (daysDiff <= 0) {
+        agingBrackets['Not Due'].count++
+        agingBrackets['Not Due'].value += caseItem.debt_remaining
+      } else if (daysDiff <= 30) {
+        agingBrackets['1-30 days'].count++
+        agingBrackets['1-30 days'].value += caseItem.debt_remaining
       } else if (daysDiff <= 60) {
         agingBrackets['31-60 days'].count++
-        agingBrackets['31-60 days'].value += caseItem.debt_amount
+        agingBrackets['31-60 days'].value += caseItem.debt_remaining
       } else if (daysDiff <= 90) {
         agingBrackets['61-90 days'].count++
-        agingBrackets['61-90 days'].value += caseItem.debt_amount
+        agingBrackets['61-90 days'].value += caseItem.debt_remaining
       } else {
         agingBrackets['90+ days'].count++
-        agingBrackets['90+ days'].value += caseItem.debt_amount
+        agingBrackets['90+ days'].value += caseItem.debt_remaining
       }
     })
 

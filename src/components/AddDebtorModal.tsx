@@ -3,10 +3,14 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from "sonner";
-import { UploadCloud } from "lucide-react";
+import { UploadCloud, Calendar as CalendarIcon } from "lucide-react";
 import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 interface AddDebtorModalProps {
   isOpen: boolean;
@@ -44,6 +48,7 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
   const [loading, setLoading] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [dueDate, setDueDate] = useState<Date>();
   const [formData, setFormData] = useState({
     fullName: "",
     nationality: "",
@@ -119,11 +124,11 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
         .insert({
           debtor_id: debtor.id,
           case_number: `CASE-${Date.now()}`,
-          creditor_name: "Your Company", // You might want to make this configurable
+          creditor_name: "Your Company",
           currency: "PLN",
           debt_amount: Number(formData.amount),
           debt_remaining: Number(formData.amount),
-          due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
+          due_date: dueDate?.toISOString().split('T')[0] || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
           case_description: formData.description,
         })
         .select()
@@ -183,6 +188,7 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
         description: "",
       });
       setSelectedFiles([]);
+      setDueDate(undefined);
       
     } catch (error) {
       console.error("Error adding debtor:", error);
@@ -293,6 +299,34 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
                     onChange={handleInputChange}
                   />
                 </div>
+              </div>
+
+              <div>
+                <label htmlFor="dueDate" className="text-sm font-medium text-gray-700 block mb-1">
+                  Due Date
+                </label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !dueDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {dueDate ? format(dueDate, "PPP") : <span>Pick a date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={dueDate}
+                      onSelect={setDueDate}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
 
               <div>
