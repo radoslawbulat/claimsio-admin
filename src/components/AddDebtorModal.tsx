@@ -48,7 +48,7 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
   const [loading, setLoading] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [dueDate, setDueDate] = useState<Date>();
+  const [date, setDate] = useState<Date>();
   const [formData, setFormData] = useState({
     fullName: "",
     nationality: "",
@@ -128,7 +128,7 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
           currency: "PLN",
           debt_amount: Number(formData.amount),
           debt_remaining: Number(formData.amount),
-          due_date: dueDate?.toISOString().split('T')[0] || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          due_date: date?.toISOString().split('T')[0] || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
           case_description: formData.description,
         })
         .select()
@@ -188,7 +188,7 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
         description: "",
       });
       setSelectedFiles([]);
-      setDueDate(undefined);
+      setDate(undefined);
       
     } catch (error) {
       console.error("Error adding debtor:", error);
@@ -206,190 +206,189 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
             <SheetTitle>Add a New Debtor</SheetTitle>
           </SheetHeader>
           <form onSubmit={handleSubmit} className="space-y-6 mt-6">
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="fullName" className="text-sm font-medium text-gray-700 block mb-1">
-                  Full Name
-                </label>
-                <Input
-                  id="fullName"
-                  placeholder="John Doe"
-                  required
-                  value={formData.fullName}
-                  onChange={handleInputChange}
-                />
-              </div>
+            <div>
+              <label htmlFor="fullName" className="text-sm font-medium text-gray-700 block mb-1">
+                Full Name
+              </label>
+              <Input
+                id="fullName"
+                placeholder="John Doe"
+                required
+                value={formData.fullName}
+                onChange={handleInputChange}
+              />
+            </div>
 
+            <div>
+              <label htmlFor="nationality" className="text-sm font-medium text-gray-700 block mb-1">
+                Nationality
+              </label>
+              <Select value={formData.nationality} onValueChange={(value) => handleSelectChange("nationality", value)}>
+                <SelectTrigger id="nationality">
+                  <SelectValue placeholder="Select nationality" />
+                </SelectTrigger>
+                <SelectContent className="max-h-[200px]">
+                  {nationalities.map((nationality) => (
+                    <SelectItem key={nationality} value={nationality}>
+                      {nationality}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label htmlFor="email" className="text-sm font-medium text-gray-700 block mb-1">
+                Email
+              </label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="john@example.com"
+                required
+                value={formData.email}
+                onChange={handleInputChange}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="phone" className="text-sm font-medium text-gray-700 block mb-1">
+                Phone Number
+              </label>
+              <Input
+                id="phone"
+                type="tel"
+                placeholder="+1 (555) 000-0000"
+                required
+                value={formData.phone}
+                onChange={handleInputChange}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="nationality" className="text-sm font-medium text-gray-700 block mb-1">
-                  Nationality
+                <label htmlFor="currency" className="text-sm font-medium text-gray-700 block mb-1">
+                  Currency
                 </label>
-                <Select value={formData.nationality} onValueChange={(value) => handleSelectChange("nationality", value)}>
-                  <SelectTrigger id="nationality">
-                    <SelectValue placeholder="Select nationality" />
+                <Select value={formData.currency} onValueChange={(value) => handleSelectChange("currency", value)}>
+                  <SelectTrigger id="currency">
+                    <SelectValue placeholder="Select currency" />
                   </SelectTrigger>
-                  <SelectContent className="max-h-[200px]">
-                    {nationalities.map((nationality) => (
-                      <SelectItem key={nationality} value={nationality}>
-                        {nationality}
+                  <SelectContent>
+                    {currencies.map((currency) => (
+                      <SelectItem key={currency.code} value={currency.code}>
+                        {currency.symbol} {currency.code}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-
               <div>
-                <label htmlFor="email" className="text-sm font-medium text-gray-700 block mb-1">
-                  Email
+                <label htmlFor="amount" className="text-sm font-medium text-gray-700 block mb-1">
+                  Debt Amount
                 </label>
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="john@example.com"
+                  id="amount"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder="10000.00"
                   required
-                  value={formData.email}
+                  value={formData.amount}
                   onChange={handleInputChange}
                 />
               </div>
+            </div>
 
-              <div>
-                <label htmlFor="phone" className="text-sm font-medium text-gray-700 block mb-1">
-                  Phone Number
-                </label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="+1 (555) 000-0000"
-                  required
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="currency" className="text-sm font-medium text-gray-700 block mb-1">
-                    Currency
-                  </label>
-                  <Select value={formData.currency} onValueChange={(value) => handleSelectChange("currency", value)}>
-                    <SelectTrigger id="currency">
-                      <SelectValue placeholder="Select currency" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {currencies.map((currency) => (
-                        <SelectItem key={currency.code} value={currency.code}>
-                          {currency.symbol} {currency.code}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <label htmlFor="amount" className="text-sm font-medium text-gray-700 block mb-1">
-                    Debt Amount
-                  </label>
-                  <Input
-                    id="amount"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    placeholder="10000.00"
-                    required
-                    value={formData.amount}
-                    onChange={handleInputChange}
+            <div>
+              <label htmlFor="dueDate" className="text-sm font-medium text-gray-700 block mb-1">
+                Due Date
+              </label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !date && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {date ? format(date, "PPP") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" side="bottom" align="center">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={setDate}
+                    initialFocus
+                    disabled={(date) => date < new Date()}
                   />
-                </div>
-              </div>
+                </PopoverContent>
+              </Popover>
+            </div>
 
-              <div>
-                <label htmlFor="dueDate" className="text-sm font-medium text-gray-700 block mb-1">
-                  Due Date
-                </label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !dueDate && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {dueDate ? format(dueDate, "PPP") : <span>Pick a date</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={dueDate}
-                      onSelect={setDueDate}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
+            <div>
+              <label htmlFor="description" className="text-sm font-medium text-gray-700 block mb-1">
+                Description
+              </label>
+              <Textarea 
+                id="description" 
+                placeholder="Enter details about the debt..." 
+                className="resize-none" 
+                rows={4}
+                value={formData.description}
+                onChange={handleInputChange}
+              />
+            </div>
 
-              <div>
-                <label htmlFor="description" className="text-sm font-medium text-gray-700 block mb-1">
-                  Description
-                </label>
-                <Textarea 
-                  id="description" 
-                  placeholder="Enter details about the debt..." 
-                  className="resize-none" 
-                  rows={4}
-                  value={formData.description}
-                  onChange={handleInputChange}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="attachments" className="text-sm font-medium text-gray-700 block mb-1">
-                  Attachments
-                </label>
-                <div className="mt-1">
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
-                    <div className="flex flex-col items-center">
-                      <UploadCloud className="h-8 w-8 text-gray-400" />
-                      <div className="mt-2 text-sm text-gray-600">
-                        <label htmlFor="file-upload" className="relative cursor-pointer text-blue-600 hover:text-blue-500">
-                          <span>Upload files</span>
-                          <input
-                            id="file-upload"
-                            name="file-upload"
-                            type="file"
-                            className="sr-only"
-                            multiple
-                            accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
-                            onChange={handleFileChange}
-                            ref={fileInputRef}
-                          />
-                        </label>
-                        <span className="pl-1">or drag and drop</span>
-                      </div>
-                      <p className="text-xs text-gray-500 mt-1">
-                        PDF, DOC, DOCX, PNG, JPG up to 10MB
-                      </p>
+            <div>
+              <label htmlFor="attachments" className="text-sm font-medium text-gray-700 block mb-1">
+                Attachments
+              </label>
+              <div className="mt-1">
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
+                  <div className="flex flex-col items-center">
+                    <UploadCloud className="h-8 w-8 text-gray-400" />
+                    <div className="mt-2 text-sm text-gray-600">
+                      <label htmlFor="file-upload" className="relative cursor-pointer text-blue-600 hover:text-blue-500">
+                        <span>Upload files</span>
+                        <input
+                          id="file-upload"
+                          name="file-upload"
+                          type="file"
+                          className="sr-only"
+                          multiple
+                          accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+                          onChange={handleFileChange}
+                          ref={fileInputRef}
+                        />
+                      </label>
+                      <span className="pl-1">or drag and drop</span>
                     </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      PDF, DOC, DOCX, PNG, JPG up to 10MB
+                    </p>
                   </div>
-                  {selectedFiles.length > 0 && (
-                    <div className="mt-4 space-y-2">
-                      {selectedFiles.map((file, index) => (
-                        <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                          <span className="text-sm text-gray-600">{file.name}</span>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => removeFile(index)}
-                          >
-                            Remove
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
                 </div>
+                {selectedFiles.length > 0 && (
+                  <div className="mt-4 space-y-2">
+                    {selectedFiles.map((file, index) => (
+                      <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                        <span className="text-sm text-gray-600">{file.name}</span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeFile(index)}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
