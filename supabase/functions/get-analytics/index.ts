@@ -19,27 +19,35 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') as string;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Get total debt and remaining debt for active debtors
-    const { data: debtorsData, error: debtorsError } = await supabase
-      .from('debtors')
-      .select('total_debt_amount, total_debt_remaining')
-      .eq('status', 'active');
+    // Get total remaining debt for active cases (portfolio value)
+    const { data: activeCasesData, error: activeCasesError } = await supabase
+      .from('cases')
+      .select('debt_remaining')
+      .eq('status', 'ACTIVE');
 
-    if (debtorsError) throw debtorsError;
+    if (activeCasesError) throw activeCasesError;
+
+    // Get total debt amount and remaining debt for all cases regardless of status
+    const { data: allCasesData, error: allCasesError } = await supabase
+      .from('cases')
+      .select('debt_amount, debt_remaining');
+
+    if (allCasesError) throw allCasesError;
 
     // Get count of active cases
     const { count: activeCases, error: casesError } = await supabase
       .from('cases')
       .select('*', { count: 'exact', head: true })
-      .not('status', 'eq', 'CLOSED');
+      .eq('status', 'ACTIVE');
 
     if (casesError) throw casesError;
 
     // Calculate metrics
-    const portfolioValue = debtorsData.reduce((sum, debtor) => sum + (debtor.total_debt_remaining || 0), 0);
-    const totalDebt = debtorsData.reduce((sum, debtor) => sum + (debtor.total_debt_amount || 0), 0);
-    const recoveredValue = totalDebt - portfolioValue;
-    const recoveryRate = totalDebt > 0 ? (recoveredValue / totalDebt) * 100 : 0;
+    const portfolioValue = activeCasesData.reduce((sum, data) => sum + (data.debt_remaining || 0), 0);
+    const totalDebtAmount = allCasesData.reduce((sum, data) => sum + (data.debt_amount || 0), 0);
+    const totalRemainingDebt = allCasesData.reduce((sum, data) => sum + (data.debt_remaining || 0), 0);
+    const recoveredValue = totalDebtAmount - totalRemainingDebt;
+    const recoveryRate = totalDebtAmount > 0 ? (recoveredValue / totalDebtAmount) * 100 : 0;
 
     const response = {
       portfolioValue,
@@ -49,6 +57,12 @@ serve(async (req) => {
     };
 
     console.log('Analytics calculated:', response);
+    console.log('Details:', {
+      totalDebtAmount,
+      totalRemainingDebt,
+      activeCasesCount: activeCasesData.length,
+      allCasesCount: allCasesData.length
+    });
 
     return new Response(JSON.stringify(response), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
