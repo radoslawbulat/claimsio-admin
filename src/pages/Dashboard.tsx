@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, Line, ComposedChart } from "recharts";
@@ -34,9 +33,9 @@ const formatNumber = (value: number) => {
   return new Intl.NumberFormat('pl-PL').format(value);
 };
 
-// Define color scheme based on the provided image
+// Define color scheme for aging categories
 const CHART_COLORS = {
-  bars: ['#FEC6A1', '#F97316', '#D946EF', '#8B5CF6', '#0EA5E9'],
+  bars: ['#F9A902', '#FF5900', '#CA061A', '#5E007D', '#001747'],
   line: '#ef4444'
 };
 
@@ -210,4 +209,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
