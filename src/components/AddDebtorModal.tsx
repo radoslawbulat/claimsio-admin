@@ -317,12 +317,13 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
                     {date ? format(date, "PPP") : <span>Pick a date</span>}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 z-[100] bg-white" align="start">
+                <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
                     selected={date}
                     onSelect={setDate}
                     initialFocus
+                    className="rounded-md border bg-white"
                   />
                 </PopoverContent>
               </Popover>
