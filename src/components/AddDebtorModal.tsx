@@ -3,14 +3,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from "sonner";
-import { UploadCloud, Calendar as CalendarIcon } from "lucide-react";
+import { UploadCloud } from "lucide-react";
 import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import { parse, isValid } from "date-fns";
 
 interface AddDebtorModalProps {
   isOpen: boolean;
@@ -23,7 +20,7 @@ const currencies = [
 
 const nationalities = [
   "Afghan", "Albanian", "Algerian", "American", "Andorran", "Angolan", "Antiguan", "Argentine", "Armenian", "Australian",
-  "Austrian", "Azerbaijani", "Bahamian", "Bahraini", "Bangladeshi", "Barbadian", "Belarusian", "Belarusian", "Belgian", "Belizean",
+  "Austrian", "Azerbaijani", "Bahamian", "Bahraini", "Bangladeshi", "Barbadian", "Belarusian", "Belgian", "Belizean",
   "Beninese", "Bhutanese", "Bolivian", "Bosnian", "Botswanan", "Brazilian", "British", "Bruneian", "Bulgarian",
   "Burkinabe", "Burmese", "Burundian", "Cambodian", "Cameroonian", "Canadian", "Cape Verdean", "Central African",
   "Chadian", "Chilean", "Chinese", "Colombian", "Comoran", "Congolese", "Costa Rican", "Croatian", "Cuban", "Cypriot",
@@ -48,7 +45,7 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
   const [loading, setLoading] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [date, setDate] = useState<Date>();
+  const [dateString, setDateString] = useState("");
   const [formData, setFormData] = useState({
     fullName: "",
     nationality: "",
@@ -62,6 +59,15 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDateString(e.target.value);
+  };
+
+  const validateDate = (dateStr: string) => {
+    const parsedDate = parse(dateStr, "dd-MM-yyyy", new Date());
+    return isValid(parsedDate) ? parsedDate : null;
   };
 
   const handleSelectChange = (field: string, value: string) => {
@@ -79,6 +85,13 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const parsedDate = validateDate(dateString);
+    if (!parsedDate) {
+      toast.error("Please enter a valid date in the format DD-MM-YYYY");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -128,7 +141,7 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
           currency: "PLN",
           debt_amount: Number(formData.amount),
           debt_remaining: Number(formData.amount),
-          due_date: date?.toISOString().split('T')[0] || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          due_date: parsedDate.toISOString().split('T')[0],
           case_description: formData.description,
         })
         .select()
@@ -188,7 +201,7 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
         description: "",
       });
       setSelectedFiles([]);
-      setDate(undefined);
+      setDateString("");
       
     } catch (error) {
       console.error("Error adding debtor:", error);
@@ -304,29 +317,15 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
               <label htmlFor="dueDate" className="text-sm font-medium text-gray-700 block mb-1">
                 Due Date
               </label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !date && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, "PPP") : <span>Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    initialFocus
-                    className="rounded-md border bg-white"
-                  />
-                </PopoverContent>
-              </Popover>
+              <Input
+                id="dueDate"
+                type="text"
+                placeholder="DD-MM-YYYY"
+                value={dateString}
+                onChange={handleDateChange}
+                className="w-full"
+                required
+              />
             </div>
 
             <div>
