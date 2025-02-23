@@ -53,7 +53,7 @@ const Login = () => {
         <Card className="border-none shadow-lg">
           <CardHeader className="space-y-1 flex flex-col items-center">
             <CardTitle className="text-2xl font-bold text-gray-900">
-              Debt Collector Panel
+              Debt Collector Access
             </CardTitle>
             <p className="text-[#8E9196] text-base">
               Please login to access your account
