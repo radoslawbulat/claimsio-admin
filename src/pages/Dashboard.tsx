@@ -34,6 +34,12 @@ const formatNumber = (value: number) => {
   return new Intl.NumberFormat('pl-PL').format(value);
 };
 
+// Define color scheme based on the provided image
+const CHART_COLORS = {
+  bars: ['#FEC6A1', '#F97316', '#D946EF', '#8B5CF6', '#0EA5E9'],
+  line: '#ef4444'
+};
+
 const Dashboard = () => {
   const [isAddDebtorOpen, setIsAddDebtorOpen] = useState(false);
 
@@ -46,6 +52,11 @@ const Dashboard = () => {
     queryKey: ['aging-data'],
     queryFn: fetchAgingData
   });
+
+  const colorizedAgingData = agingData?.map((item, index) => ({
+    ...item,
+    fill: CHART_COLORS.bars[index % CHART_COLORS.bars.length]
+  }));
 
   return (
     <div className="space-y-8 animate-fade-in bg-[#f9fafb] min-h-screen p-6">
@@ -138,7 +149,7 @@ const Dashboard = () => {
           <div className="h-[400px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart 
-                data={isLoadingAging ? [] : agingData} 
+                data={isLoadingAging ? [] : colorizedAgingData} 
                 margin={{ top: 10, right: 30, left: 40, bottom: 20 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
@@ -171,7 +182,6 @@ const Dashboard = () => {
                 />
                 <Bar 
                   dataKey="value" 
-                  fill="#3b82f6"
                   radius={[4, 4, 0, 0]}
                   yAxisId="left"
                   name="value"
@@ -179,11 +189,11 @@ const Dashboard = () => {
                 <Line
                   type="monotone"
                   dataKey="count"
-                  stroke="#ef4444"
+                  stroke={CHART_COLORS.line}
                   strokeWidth={2}
                   yAxisId="right"
                   name="count"
-                  dot={{ fill: '#ef4444' }}
+                  dot={{ fill: CHART_COLORS.line }}
                 />
               </ComposedChart>
             </ResponsiveContainer>
@@ -200,3 +210,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
