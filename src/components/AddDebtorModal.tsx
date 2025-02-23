@@ -1,3 +1,4 @@
+
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,11 @@ import { toast } from "sonner";
 import { UploadCloud } from "lucide-react";
 import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 interface AddDebtorModalProps {
   isOpen: boolean;
@@ -52,6 +58,7 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
     currency: "PLN",
     amount: "",
     description: "",
+    dueDate: new Date()
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -61,6 +68,12 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
 
   const handleSelectChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleDateChange = (date: Date | undefined) => {
+    if (date) {
+      setFormData((prev) => ({ ...prev, dueDate: date }));
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -123,7 +136,7 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
           currency: "PLN",
           debt_amount: Number(formData.amount),
           debt_remaining: Number(formData.amount),
-          due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
+          due_date: formData.dueDate.toISOString(),
           case_description: formData.description,
         })
         .select()
@@ -181,6 +194,7 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
         currency: "PLN",
         amount: "",
         description: "",
+        dueDate: new Date(),
       });
       setSelectedFiles([]);
       
@@ -296,6 +310,34 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
               </div>
 
               <div>
+                <label className="text-sm font-medium text-gray-700 block mb-1">
+                  Due Date
+                </label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !formData.dueDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {formData.dueDate ? format(formData.dueDate, "PPP") : <span>Pick a date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={formData.dueDate}
+                      onSelect={handleDateChange}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div>
                 <label htmlFor="description" className="text-sm font-medium text-gray-700 block mb-1">
                   Description
                 </label>
@@ -375,3 +417,4 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
 };
 
 export default AddDebtorModal;
+
