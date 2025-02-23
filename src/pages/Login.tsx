@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -53,9 +52,6 @@ const Login = () => {
       <div className="w-full max-w-md p-4 animate-fade-in">
         <Card className="border-none shadow-lg">
           <CardHeader className="space-y-1 flex flex-col items-center">
-            <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mb-4">
-              <Lock className="w-6 h-6 text-white" />
-            </div>
             <CardTitle className="text-2xl font-bold text-gray-900">
               Debt Collector Panel
             </CardTitle>
