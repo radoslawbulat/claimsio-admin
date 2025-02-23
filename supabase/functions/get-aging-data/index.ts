@@ -8,7 +8,6 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
@@ -21,10 +20,9 @@ serve(async (req) => {
 
     console.log('Fetching active cases...')
 
-    // Get all active cases - using 'ACTIVE' instead of 'NEW'
     const { data: cases, error } = await supabase
       .from('cases')
-      .select('created_at')
+      .select('created_at, debt_amount')
       .eq('status', 'ACTIVE')
       .order('created_at')
 
@@ -37,10 +35,10 @@ serve(async (req) => {
 
     const now = new Date()
     const agingBrackets = {
-      '0-30 days': 0,
-      '31-60 days': 0,
-      '61-90 days': 0,
-      '90+ days': 0
+      '0-30 days': { count: 0, value: 0 },
+      '31-60 days': { count: 0, value: 0 },
+      '61-90 days': { count: 0, value: 0 },
+      '90+ days': { count: 0, value: 0 }
     }
 
     cases?.forEach(caseItem => {
@@ -48,19 +46,24 @@ serve(async (req) => {
       const daysDiff = Math.floor((now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24))
 
       if (daysDiff <= 30) {
-        agingBrackets['0-30 days']++
+        agingBrackets['0-30 days'].count++
+        agingBrackets['0-30 days'].value += caseItem.debt_amount
       } else if (daysDiff <= 60) {
-        agingBrackets['31-60 days']++
+        agingBrackets['31-60 days'].count++
+        agingBrackets['31-60 days'].value += caseItem.debt_amount
       } else if (daysDiff <= 90) {
-        agingBrackets['61-90 days']++
+        agingBrackets['61-90 days'].count++
+        agingBrackets['61-90 days'].value += caseItem.debt_amount
       } else {
-        agingBrackets['90+ days']++
+        agingBrackets['90+ days'].count++
+        agingBrackets['90+ days'].value += caseItem.debt_amount
       }
     })
 
-    const formattedData = Object.entries(agingBrackets).map(([bracket, count]) => ({
+    const formattedData = Object.entries(agingBrackets).map(([bracket, data]) => ({
       bracket,
-      amount: count
+      value: data.value,
+      count: data.count
     }))
 
     console.log('Aging data:', formattedData)
