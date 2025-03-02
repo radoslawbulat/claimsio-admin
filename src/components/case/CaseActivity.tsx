@@ -1,9 +1,11 @@
+
 import { format } from 'date-fns';
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MessageCircle, PhoneCall, Mail } from "lucide-react";
+import { MessageCircle, PhoneCall, Mail, ArrowLeftFromLine, ArrowRightFromLine } from "lucide-react";
 import { getCommsStatusColor } from "@/utils/case-colors";
 import { Communication } from "@/types/case";
+import { useState } from 'react';
 
 const getCommsIcon = (type: Communication['comms_type']) => {
   switch (type) {
@@ -23,17 +25,50 @@ interface CaseActivityProps {
 }
 
 export const CaseActivity = ({ communications }: CaseActivityProps) => {
+  const [directionFilter, setDirectionFilter] = useState<'all' | 'inbound' | 'outbound'>('all');
+
+  const filteredComms = communications.filter(comm => 
+    directionFilter === 'all' ? true : comm.direction === directionFilter
+  );
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Activity</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle>Activity</CardTitle>
+          <div className="flex gap-2">
+            <Badge
+              variant={directionFilter === 'all' ? 'default' : 'outline'}
+              className="cursor-pointer hover:bg-accent"
+              onClick={() => setDirectionFilter('all')}
+            >
+              All
+            </Badge>
+            <Badge
+              variant={directionFilter === 'inbound' ? 'default' : 'outline'}
+              className="cursor-pointer hover:bg-accent"
+              onClick={() => setDirectionFilter('inbound')}
+            >
+              <ArrowLeftFromLine className="h-3 w-3 mr-1" />
+              Inbound
+            </Badge>
+            <Badge
+              variant={directionFilter === 'outbound' ? 'default' : 'outline'}
+              className="cursor-pointer hover:bg-accent"
+              onClick={() => setDirectionFilter('outbound')}
+            >
+              <ArrowRightFromLine className="h-3 w-3 mr-1" />
+              Outbound
+            </Badge>
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
-        {communications && communications.length > 0 ? (
+        {filteredComms && filteredComms.length > 0 ? (
           <div className="space-y-4">
-            {communications.map((comm) => (
+            {filteredComms.map((comm) => (
               <div key={comm.id} className="flex items-start gap-4 p-4 border rounded-lg">
-                <div className="p-2 bg-secondary rounded-full">
+                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-accent">
                   {getCommsIcon(comm.comms_type)}
                 </div>
                 <div className="flex-1">
@@ -43,7 +78,12 @@ export const CaseActivity = ({ communications }: CaseActivityProps) => {
                       <Badge className={getCommsStatusColor(comm.status)}>
                         {comm.status}
                       </Badge>
-                      <Badge variant="outline">
+                      <Badge variant="outline" className="flex items-center gap-1">
+                        {comm.direction === 'inbound' ? (
+                          <ArrowLeftFromLine className="h-3 w-3" />
+                        ) : (
+                          <ArrowRightFromLine className="h-3 w-3" />
+                        )}
                         {comm.direction}
                       </Badge>
                     </div>
