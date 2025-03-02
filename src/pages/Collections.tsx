@@ -39,7 +39,8 @@ const fetchCollections = async () => {
       debtor:debtors(first_name, last_name),
       last_comms:comms(created_at)
     `)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .limit(1);
 
   if (error) throw error;
   return data as CollectionCase[];
