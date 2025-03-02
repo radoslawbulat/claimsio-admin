@@ -39,36 +39,38 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <div className="min-h-screen w-full bg-background">
-          <BrowserRouter>
+        <BrowserRouter>
+          <div className="min-h-screen w-full flex bg-background">
             {user && <AppSidebar />}
-            <main className={`${user ? 'ml-64' : ''} flex-1`}>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/login" element={<Login />} />
-                <Route
-                  path="/dashboard"
-                  element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/collections"
-                  element={
-                    <ProtectedRoute>
-                      <Collections />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+            <main className={`flex-1 ${user ? 'ml-64' : ''}`}>
+              <div className="h-full p-4">
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <ProtectedRoute>
+                        <Dashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/collections"
+                    element={
+                      <ProtectedRoute>
+                        <Collections />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </div>
             </main>
-          </BrowserRouter>
+          </div>
           <ToastComponent />
           <Toaster />
-        </div>
+        </BrowserRouter>
       </ThemeProvider>
     </QueryClientProvider>
   );
