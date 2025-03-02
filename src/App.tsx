@@ -11,6 +11,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { useEffect } from "react";
 import { supabase } from "./integrations/supabase/client";
+import AppSidebar from "./components/AppSidebar";
 
 import Index from "./pages/Index";
 import Login from "./pages/Login";
@@ -24,36 +25,39 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/collections"
-              element={
-                <ProtectedRoute>
-                  <Collections />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-        <Toaster />
+        <div className="min-h-screen flex w-full">
+          <BrowserRouter>
+            <AppSidebar />
+            <main className="flex-1">
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/login" element={<Login />} />
+                <Route
+                  path="/dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/collections"
+                  element={
+                    <ProtectedRoute>
+                      <Collections />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </main>
+          </BrowserRouter>
+          <Toaster />
+        </div>
       </ThemeProvider>
     </QueryClientProvider>
   );
 }
-
-export default App;
 
 function Toaster() {
   const { toast } = useToast();
@@ -96,3 +100,5 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   return user ? <>{children}</> : <Navigate to="/login" />;
 }
+
+export default App;
