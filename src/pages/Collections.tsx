@@ -118,23 +118,23 @@ const Collections = () => {
 
   return (
     <div className="p-6">
-      <div className="flex flex-col gap-2 mb-4">
-        <h1 className="text-xl font-bold">Collections</h1>
-        <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center justify-between">
+      <div className="flex flex-col gap-4 mb-6">
+        <h1 className="text-2xl font-bold">Collections</h1>
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
           <div className="relative w-full sm:w-[300px]">
-            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
             <Input
               placeholder="Search by case ID or debtor name..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 h-9"
+              className="pl-10"
             />
           </div>
           <Select
             value={selectedStatus || undefined}
             onValueChange={(value) => setSelectedStatus(value as typeof selectedStatus)}
           >
-            <SelectTrigger className="w-[160px] h-9">
+            <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
             <SelectContent>
