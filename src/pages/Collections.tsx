@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
-import { Search } from "lucide-react";
+import { Search, ArrowUpDown } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -85,10 +85,16 @@ const getStatusStyle = (status: CaseWithDebtor['status']) => {
   }
 };
 
+type SortConfig = {
+  column: 'debt_remaining' | 'due_date' | 'latest_comm' | null;
+  direction: 'asc' | 'desc';
+};
+
 const Collections = () => {
   const navigate = useNavigate();
   const [selectedStatus, setSelectedStatus] = useState<CaseWithDebtor['status'] | 'ALL' | null>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortConfig, setSortConfig] = useState<SortConfig>({ column: null, direction: 'asc' });
   
   const { data: cases, isLoading, error } = useQuery({
     queryKey: ['cases', selectedStatus],
@@ -99,6 +105,13 @@ const Collections = () => {
     navigate(`/case/${caseId}`);
   };
 
+  const handleSort = (column: SortConfig['column']) => {
+    setSortConfig(current => ({
+      column,
+      direction: current.column === column && current.direction === 'asc' ? 'desc' : 'asc'
+    }));
+  };
+
   const filteredCases = cases?.filter(caseItem => {
     const searchLower = searchQuery.toLowerCase();
     const matchesSearch = 
@@ -107,6 +120,27 @@ const Collections = () => {
         (`${caseItem.debtor.first_name} ${caseItem.debtor.last_name}`).toLowerCase().includes(searchLower));
     return searchQuery === '' || matchesSearch;
   });
+
+  const sortedCases = React.useMemo(() => {
+    if (!filteredCases || !sortConfig.column) return filteredCases;
+
+    return [...filteredCases].sort((a, b) => {
+      const direction = sortConfig.direction === 'asc' ? 1 : -1;
+
+      switch (sortConfig.column) {
+        case 'debt_remaining':
+          return (a.debt_remaining - b.debt_remaining) * direction;
+        case 'due_date':
+          return (new Date(a.due_date).getTime() - new Date(b.due_date).getTime()) * direction;
+        case 'latest_comm':
+          const aTime = a.latest_comm ? new Date(a.latest_comm.created_at).getTime() : 0;
+          const bTime = b.latest_comm ? new Date(b.latest_comm.created_at).getTime() : 0;
+          return (aTime - bTime) * direction;
+        default:
+          return 0;
+      }
+    });
+  }, [filteredCases, sortConfig]);
 
   if (isLoading) {
     return <div className="p-6">Loading...</div>;
@@ -152,15 +186,33 @@ const Collections = () => {
             <TableRow>
               <TableHead>ID</TableHead>
               <TableHead>Debtor</TableHead>
-              <TableHead>Debt Amount</TableHead>
+              <TableHead 
+                onClick={() => handleSort('debt_remaining')}
+                className="cursor-pointer hover:bg-muted/50"
+              >
+                Debt Amount
+                <ArrowUpDown className="ml-2 h-4 w-4 inline" />
+              </TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Due Date</TableHead>
-              <TableHead>Last Activity</TableHead>
+              <TableHead 
+                onClick={() => handleSort('due_date')}
+                className="cursor-pointer hover:bg-muted/50"
+              >
+                Due Date
+                <ArrowUpDown className="ml-2 h-4 w-4 inline" />
+              </TableHead>
+              <TableHead 
+                onClick={() => handleSort('latest_comm')}
+                className="cursor-pointer hover:bg-muted/50"
+              >
+                Last Activity
+                <ArrowUpDown className="ml-2 h-4 w-4 inline" />
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredCases && filteredCases.length > 0 ? (
-              filteredCases.map((caseItem) => (
+            {sortedCases && sortedCases.length > 0 ? (
+              sortedCases.map((caseItem) => (
                 <TableRow 
                   key={caseItem.id}
                   onClick={() => handleRowClick(caseItem.id)}
