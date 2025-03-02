@@ -10,13 +10,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 
 type CaseWithDebtor = {
   id: string;
   case_number: string;
   debt_remaining: number;
-  status: string;
+  status: "ACTIVE" | "CLOSED" | "SUSPENDED";
   due_date: string;
   currency: string;
   debtor: {
@@ -41,10 +42,31 @@ const fetchCasesWithDebtors = async () => {
       debtor:debtors(first_name, last_name),
       latest_comm:comms(created_at)
     `)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .limit(1);
 
   if (error) throw error;
-  return data as CaseWithDebtor[];
+  
+  // Transform the data to match our type
+  const transformedData = data.map(item => ({
+    ...item,
+    latest_comm: item.latest_comm && item.latest_comm.length > 0
+      ? { created_at: item.latest_comm[0].created_at }
+      : null
+  }));
+
+  return transformedData as CaseWithDebtor[];
+};
+
+const getStatusStyle = (status: CaseWithDebtor['status']) => {
+  switch (status) {
+    case 'ACTIVE':
+      return { variant: 'default' as const, className: 'bg-blue-500 hover:bg-blue-500' };
+    case 'CLOSED':
+      return { variant: 'secondary' as const, className: 'bg-gray-500 hover:bg-gray-500' };
+    case 'SUSPENDED':
+      return { variant: 'destructive' as const, className: 'bg-orange-400 hover:bg-orange-400' };
+  }
 };
 
 const Collections = () => {
@@ -91,7 +113,13 @@ const Collections = () => {
                     currency: caseItem.currency,
                   }).format(caseItem.debt_remaining / 100)}
                 </TableCell>
-                <TableCell className="capitalize">{caseItem.status.toLowerCase()}</TableCell>
+                <TableCell>
+                  <Badge 
+                    {...getStatusStyle(caseItem.status)}
+                  >
+                    {caseItem.status.toLowerCase()}
+                  </Badge>
+                </TableCell>
                 <TableCell>
                   {format(new Date(caseItem.due_date), 'MMM d, yyyy')}
                 </TableCell>
