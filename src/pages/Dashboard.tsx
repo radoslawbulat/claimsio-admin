@@ -58,15 +58,13 @@ const Dashboard = () => {
   }));
 
   return (
-    <div className="space-y-8 animate-fade-in bg-[#f9fafb] min-h-screen p-6">
+    <div className="space-y-6 animate-fade-in bg-[#f9fafb] min-h-screen p-6">
       {/* Header Section */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Performance</h1>
-        </div>
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col gap-2 mb-4">
+        <h1 className="text-xl font-bold">Performance</h1>
+        <div className="flex items-center gap-2 justify-between">
           <Select defaultValue="all">
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[160px] h-9">
               <SelectValue placeholder="Select portfolio" />
             </SelectTrigger>
             <SelectContent>
@@ -75,17 +73,17 @@ const Dashboard = () => {
             </SelectContent>
           </Select>
           <Button 
-            className="gap-2"
+            className="h-9 gap-2"
             onClick={() => setIsAddDebtorOpen(true)}
           >
-            <PlusCircle size={20} />
+            <PlusCircle className="h-4 w-4" />
             Add a debtor
           </Button>
         </div>
       </div>
 
       {/* Core Metrics Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="border-none shadow-md bg-white">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-secondary">
@@ -142,7 +140,7 @@ const Dashboard = () => {
       {/* Portfolio Aging Section */}
       <Card className="border-none shadow-md bg-white">
         <CardHeader>
-          <CardTitle>Portfolio Aging</CardTitle>
+          <CardTitle className="text-base font-semibold">Portfolio Aging</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="h-[400px] w-full">
