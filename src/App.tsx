@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { ThemeProvider } from "./components/theme-provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -12,69 +11,49 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { useEffect } from "react";
 import { supabase } from "./integrations/supabase/client";
-import AppSidebar from "./components/AppSidebar";
 
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import Collections from "./pages/Collections";
-import { Toaster as ToastComponent } from "@/components/ui/toaster";
 
 const queryClient = new QueryClient();
 
 function App() {
-  const [user, setUser] = useState<any>(null);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
-
-    supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-  }, []);
-
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <BrowserRouter>
-          <div className="min-h-screen w-full flex bg-background">
-            {user && <AppSidebar />}
-            <main className={`flex-1 ${user ? 'ml-64' : ''}`}>
-              <div className="h-full p-4">
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route
-                    path="/dashboard"
-                    element={
-                      <ProtectedRoute>
-                        <Dashboard />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/collections"
-                    element={
-                      <ProtectedRoute>
-                        <Collections />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </div>
-            </main>
-          </div>
-          <ToastComponent />
-          <Toaster />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/collections"
+              element={
+                <ProtectedRoute>
+                  <Collections />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </BrowserRouter>
+        <Toaster />
       </ThemeProvider>
     </QueryClientProvider>
   );
 }
+
+export default App;
 
 function Toaster() {
   const { toast } = useToast();
@@ -117,5 +96,3 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   return user ? <>{children}</> : <Navigate to="/login" />;
 }
-
-export default App;

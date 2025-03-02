@@ -48,14 +48,14 @@ const Login = () => {
   };
 
   return (
-    <div className="w-full h-screen flex items-center justify-center bg-background">
+    <div className="min-h-screen flex items-center justify-center bg-accent/50">
       <div className="w-full max-w-md p-4 animate-fade-in">
         <Card className="border-none shadow-lg">
           <CardHeader className="space-y-1 flex flex-col items-center">
-            <CardTitle className="text-2xl font-bold text-foreground">
+            <CardTitle className="text-2xl font-bold text-gray-900">
               Debt Collector Access
             </CardTitle>
-            <p className="text-muted-foreground text-base">
+            <p className="text-[#8E9196] text-base">
               Please login to access your account
             </p>
           </CardHeader>
@@ -66,7 +66,7 @@ const Login = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full text-base placeholder:text-muted-foreground focus:border-primary"
+                  className="w-full text-base placeholder:text-[#8E9196] focus:border-primary"
                   required
                   disabled={isLoading}
                   autoComplete="email"
@@ -78,7 +78,7 @@ const Login = () => {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full text-base placeholder:text-muted-foreground focus:border-primary"
+                  className="w-full text-base placeholder:text-[#8E9196] focus:border-primary"
                   required
                   disabled={isLoading}
                   autoComplete="current-password"
@@ -87,7 +87,7 @@ const Login = () => {
               </div>
               <Button
                 type="submit"
-                className="w-full"
+                className="w-full bg-[#1A1F2C] hover:bg-[#1A1F2C]/90 text-white"
                 disabled={isLoading}
               >
                 {isLoading ? "Signing in..." : "Sign In"}
