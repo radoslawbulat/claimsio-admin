@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import {
@@ -39,11 +38,19 @@ const fetchCollections = async () => {
       debtor:debtors(first_name, last_name),
       last_comms:comms(created_at)
     `)
-    .order('created_at', { ascending: false })
-    .limit(1);
+    .order('created_at', { ascending: false });
 
   if (error) throw error;
-  return data as CollectionCase[];
+  
+  // Transform the data to match our expected type
+  const transformedData = data?.map(item => ({
+    ...item,
+    last_comms: Array.isArray(item.last_comms) && item.last_comms.length > 0 
+      ? item.last_comms[0] 
+      : null
+  }));
+
+  return transformedData as CollectionCase[];
 };
 
 const statusColors = {
