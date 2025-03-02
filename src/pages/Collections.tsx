@@ -190,7 +190,7 @@ const Collections = () => {
                   </TableCell>
                   <TableCell>
                     {caseItem.latest_comm?.created_at 
-                      ? format(new Date(caseItem.latest_comm.created_at), 'MMM d, yyyy HH:mm')
+                      ? format(new Date(caseItem.latest_comm.created_at), 'MMM d, yyyy, hh:mm:ss a')
                       : 'No activity'}
                   </TableCell>
                 </TableRow>
