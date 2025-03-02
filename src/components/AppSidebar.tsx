@@ -11,9 +11,8 @@ import {
 } from "@/components/ui/sidebar";
 import {
   LayoutDashboard,
-  Briefcase,
-  Users,
-  Calendar,
+  Folder,
+  AlertCircle,
   CreditCard,
   Settings,
   LogOut,
@@ -23,9 +22,8 @@ import { useToast } from "@/components/ui/use-toast";
 
 const menuItems = [
   { title: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
-  { title: "Portfolios", icon: Briefcase, path: "/portfolios" },
-  { title: "Debtors", icon: Users, path: "/debtors" },
-  { title: "Events", icon: Calendar, path: "/events" },
+  { title: "Collections", icon: Folder, path: "/collections" },
+  { title: "Disputes", icon: AlertCircle, path: "/disputes" },
   { title: "Payments", icon: CreditCard, path: "/payments" },
 ];
 
@@ -116,4 +114,3 @@ const AppSidebar = () => {
 };
 
 export default AppSidebar;
-
