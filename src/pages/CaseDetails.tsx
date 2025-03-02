@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -6,7 +5,7 @@ import { format } from 'date-fns';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, MessageCircle, PhoneCall, Mail } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 type CaseWithDetails = {
@@ -46,6 +45,17 @@ const fetchCaseDetails = async (caseId: string) => {
   return data as CaseWithDetails;
 };
 
+const fetchCaseComms = async (caseId: string) => {
+  const { data, error } = await supabase
+    .from('comms')
+    .select('*')
+    .eq('case_id', caseId)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data;
+};
+
 const getStatusColor = (status: CaseWithDetails['status']) => {
   switch (status) {
     case 'ACTIVE':
@@ -70,20 +80,54 @@ const getPriorityColor = (priority: CaseWithDetails['priority']) => {
   }
 };
 
+const getCommsIcon = (type: string) => {
+  switch (type) {
+    case 'call':
+      return <PhoneCall className="h-4 w-4" />;
+    case 'email':
+      return <Mail className="h-4 w-4" />;
+    case 'sms':
+      return <MessageCircle className="h-4 w-4" />;
+    default:
+      return <MessageCircle className="h-4 w-4" />;
+  }
+};
+
+const getCommsStatusColor = (status: string) => {
+  switch (status) {
+    case 'completed':
+      return 'bg-green-500 hover:bg-green-500';
+    case 'failed':
+      return 'bg-red-500 hover:bg-red-500';
+    case 'pending':
+      return 'bg-yellow-500 hover:bg-yellow-500';
+    case 'cancelled':
+      return 'bg-gray-500 hover:bg-gray-500';
+    default:
+      return 'bg-gray-500 hover:bg-gray-500';
+  }
+};
+
 const CaseDetails = () => {
   const { id } = useParams();
 
-  const { data: caseDetails, isLoading, error } = useQuery({
+  const { data: caseDetails, isLoading: isLoadingCase, error: caseError } = useQuery({
     queryKey: ['case', id],
     queryFn: () => fetchCaseDetails(id as string),
     enabled: !!id,
   });
 
-  if (isLoading) {
+  const { data: communications, isLoading: isLoadingComms } = useQuery({
+    queryKey: ['comms', id],
+    queryFn: () => fetchCaseComms(id as string),
+    enabled: !!id,
+  });
+
+  if (isLoadingCase || isLoadingComms) {
     return <div className="p-6">Loading...</div>;
   }
 
-  if (error || !caseDetails) {
+  if (caseError || !caseDetails) {
     return <div className="p-6">Error loading case details</div>;
   }
 
@@ -205,6 +249,48 @@ const CaseDetails = () => {
             </CardContent>
           </Card>
         )}
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Activity</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {communications && communications.length > 0 ? (
+              <div className="space-y-4">
+                {communications.map((comm) => (
+                  <div key={comm.id} className="flex items-start gap-4 p-4 border rounded-lg">
+                    <div className="p-2 bg-secondary rounded-full">
+                      {getCommsIcon(comm.comms_type)}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium capitalize">{comm.comms_type}</span>
+                          <Badge className={getCommsStatusColor(comm.status)}>
+                            {comm.status}
+                          </Badge>
+                          <Badge variant="outline">
+                            {comm.direction}
+                          </Badge>
+                        </div>
+                        <span className="text-sm text-muted-foreground">
+                          {format(new Date(comm.created_at), 'PPpp')}
+                        </span>
+                      </div>
+                      {comm.content && (
+                        <p className="text-sm text-muted-foreground">{comm.content}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center text-muted-foreground py-8">
+                No communications recorded for this case
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
