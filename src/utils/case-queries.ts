@@ -1,6 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { CaseWithDetails } from "@/types/case";
+import { CaseWithDetails, Communication } from "@/types/case";
 
 export const fetchCaseDetails = async (caseId: string) => {
   const { data, error } = await supabase
@@ -24,5 +24,6 @@ export const fetchCaseComms = async (caseId: string) => {
     .order('created_at', { ascending: false });
 
   if (error) throw error;
-  return data;
+  return data as Communication[];
 };
+

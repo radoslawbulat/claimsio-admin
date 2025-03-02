@@ -1,11 +1,11 @@
-
 import { format } from 'date-fns';
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageCircle, PhoneCall, Mail } from "lucide-react";
 import { getCommsStatusColor } from "@/utils/case-colors";
+import { Communication } from "@/types/case";
 
-const getCommsIcon = (type: string) => {
+const getCommsIcon = (type: Communication['comms_type']) => {
   switch (type) {
     case 'call':
       return <PhoneCall className="h-4 w-4" />;
@@ -19,7 +19,7 @@ const getCommsIcon = (type: string) => {
 };
 
 interface CaseActivityProps {
-  communications: any[];
+  communications: Communication[];
 }
 
 export const CaseActivity = ({ communications }: CaseActivityProps) => {

@@ -21,3 +21,16 @@ export type CaseWithDetails = {
     total_debt_amount: number;
   } | null;
 }
+
+export type Communication = {
+  id: string;
+  case_id: string;
+  comms_type: "call" | "email" | "sms";
+  content: string | null;
+  created_at: string;
+  direction: "inbound" | "outbound";
+  status: "pending" | "completed" | "failed" | "cancelled";
+  response: boolean | null;
+  updated_at: string;
+}
+
