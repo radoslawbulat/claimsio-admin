@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
+import { Search } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -18,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 
 type CaseWithDebtor = {
@@ -86,6 +88,7 @@ const getStatusStyle = (status: CaseWithDebtor['status']) => {
 const Collections = () => {
   const navigate = useNavigate();
   const [selectedStatus, setSelectedStatus] = useState<CaseWithDebtor['status'] | 'ALL' | null>('ALL');
+  const [searchQuery, setSearchQuery] = useState('');
   
   const { data: cases, isLoading, error } = useQuery({
     queryKey: ['cases', selectedStatus],
@@ -95,6 +98,15 @@ const Collections = () => {
   const handleRowClick = (caseId: string) => {
     navigate(`/case/${caseId}`);
   };
+
+  const filteredCases = cases?.filter(caseItem => {
+    const searchLower = searchQuery.toLowerCase();
+    const matchesSearch = 
+      caseItem.case_number.toLowerCase().includes(searchLower) ||
+      (caseItem.debtor && 
+        (`${caseItem.debtor.first_name} ${caseItem.debtor.last_name}`).toLowerCase().includes(searchLower));
+    return searchQuery === '' || matchesSearch;
+  });
 
   if (isLoading) {
     return <div className="p-6">Loading...</div>;
@@ -106,22 +118,33 @@ const Collections = () => {
 
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col gap-4 mb-6">
         <h1 className="text-2xl font-bold">Collections</h1>
-        <Select
-          value={selectedStatus || undefined}
-          onValueChange={(value) => setSelectedStatus(value as typeof selectedStatus)}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filter by status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ALL">All statuses</SelectItem>
-            <SelectItem value="ACTIVE">Active</SelectItem>
-            <SelectItem value="CLOSED">Closed</SelectItem>
-            <SelectItem value="SUSPENDED">Suspended</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+          <div className="relative w-full sm:w-[300px]">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+            <Input
+              placeholder="Search by case ID or debtor name..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          <Select
+            value={selectedStatus || undefined}
+            onValueChange={(value) => setSelectedStatus(value as typeof selectedStatus)}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">All statuses</SelectItem>
+              <SelectItem value="ACTIVE">Active</SelectItem>
+              <SelectItem value="CLOSED">Closed</SelectItem>
+              <SelectItem value="SUSPENDED">Suspended</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       <div className="rounded-lg border">
         <Table>
@@ -136,8 +159,8 @@ const Collections = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {cases && cases.length > 0 ? (
-              cases.map((caseItem) => (
+            {filteredCases && filteredCases.length > 0 ? (
+              filteredCases.map((caseItem) => (
                 <TableRow 
                   key={caseItem.id}
                   onClick={() => handleRowClick(caseItem.id)}
