@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import Collections from "./pages/Collections";
+import CaseDetails from "./pages/CaseDetails";
 
 const queryClient = new QueryClient();
 
@@ -54,6 +55,16 @@ const App = () => (
               <ProtectedRoute>
                 <AppLayout>
                   <Collections />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/case/:id"
+            element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <CaseDetails />
                 </AppLayout>
               </ProtectedRoute>
             }

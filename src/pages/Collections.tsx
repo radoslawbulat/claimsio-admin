@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 import {
   Table,
   TableBody,
@@ -83,12 +84,17 @@ const getStatusStyle = (status: CaseWithDebtor['status']) => {
 };
 
 const Collections = () => {
+  const navigate = useNavigate();
   const [selectedStatus, setSelectedStatus] = useState<CaseWithDebtor['status'] | 'ALL' | null>('ALL');
   
   const { data: cases, isLoading, error } = useQuery({
     queryKey: ['cases', selectedStatus],
     queryFn: () => fetchCasesWithDebtors(selectedStatus),
   });
+
+  const handleRowClick = (caseId: string) => {
+    navigate(`/case/${caseId}`);
+  };
 
   if (isLoading) {
     return <div className="p-6">Loading...</div>;
@@ -132,7 +138,11 @@ const Collections = () => {
           <TableBody>
             {cases && cases.length > 0 ? (
               cases.map((caseItem) => (
-                <TableRow key={caseItem.id}>
+                <TableRow 
+                  key={caseItem.id}
+                  onClick={() => handleRowClick(caseItem.id)}
+                  className="cursor-pointer hover:bg-muted"
+                >
                   <TableCell className="font-medium">{caseItem.case_number}</TableCell>
                   <TableCell>
                     {caseItem.debtor 
