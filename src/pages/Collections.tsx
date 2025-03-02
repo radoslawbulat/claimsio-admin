@@ -101,14 +101,14 @@ const Collections = () => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Collections</h1>
         <Select
-          value={selectedStatus || ""}
-          onValueChange={(value) => setSelectedStatus(value as CaseWithDebtor['status'] | null)}
+          value={selectedStatus || undefined}
+          onValueChange={(value) => setSelectedStatus(value ? value as CaseWithDebtor['status'] : null)}
         >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Filter by status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All statuses</SelectItem>
+            <SelectItem value="ALL">All statuses</SelectItem>
             <SelectItem value="ACTIVE">Active</SelectItem>
             <SelectItem value="CLOSED">Closed</SelectItem>
             <SelectItem value="SUSPENDED">Suspended</SelectItem>
@@ -128,37 +128,45 @@ const Collections = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {cases?.map((caseItem) => (
-              <TableRow key={caseItem.id}>
-                <TableCell className="font-medium">{caseItem.case_number}</TableCell>
-                <TableCell>
-                  {caseItem.debtor 
-                    ? `${caseItem.debtor.first_name} ${caseItem.debtor.last_name}`
-                    : 'N/A'}
-                </TableCell>
-                <TableCell>
-                  {new Intl.NumberFormat('en-US', {
-                    style: 'currency',
-                    currency: caseItem.currency,
-                  }).format(caseItem.debt_remaining / 100)}
-                </TableCell>
-                <TableCell>
-                  <Badge 
-                    {...getStatusStyle(caseItem.status)}
-                  >
-                    {caseItem.status.toLowerCase()}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  {format(new Date(caseItem.due_date), 'MMM d, yyyy')}
-                </TableCell>
-                <TableCell>
-                  {caseItem.latest_comm?.created_at 
-                    ? format(new Date(caseItem.latest_comm.created_at), 'MMM d, yyyy')
-                    : 'No activity'}
+            {cases && cases.length > 0 ? (
+              cases.map((caseItem) => (
+                <TableRow key={caseItem.id}>
+                  <TableCell className="font-medium">{caseItem.case_number}</TableCell>
+                  <TableCell>
+                    {caseItem.debtor 
+                      ? `${caseItem.debtor.first_name} ${caseItem.debtor.last_name}`
+                      : 'N/A'}
+                  </TableCell>
+                  <TableCell>
+                    {new Intl.NumberFormat('en-US', {
+                      style: 'currency',
+                      currency: caseItem.currency,
+                    }).format(caseItem.debt_remaining / 100)}
+                  </TableCell>
+                  <TableCell>
+                    <Badge 
+                      {...getStatusStyle(caseItem.status)}
+                    >
+                      {caseItem.status.toLowerCase()}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    {format(new Date(caseItem.due_date), 'MMM d, yyyy')}
+                  </TableCell>
+                  <TableCell>
+                    {caseItem.latest_comm?.created_at 
+                      ? format(new Date(caseItem.latest_comm.created_at), 'MMM d, yyyy')
+                      : 'No activity'}
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-4">
+                  No cases found
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </div>
