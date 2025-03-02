@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import {
@@ -11,6 +10,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 
 type CaseWithDebtor = {
@@ -29,8 +35,8 @@ type CaseWithDebtor = {
   } | null;
 }
 
-const fetchCasesWithDebtors = async () => {
-  const { data, error } = await supabase
+const fetchCasesWithDebtors = async (status: string | null) => {
+  let query = supabase
     .from('cases')
     .select(`
       id,
@@ -42,8 +48,13 @@ const fetchCasesWithDebtors = async () => {
       debtor:debtors(first_name, last_name),
       latest_comm:comms(created_at)
     `)
-    .order('created_at', { ascending: false })
-    .limit(1);
+    .order('created_at', { ascending: false });
+
+  if (status) {
+    query = query.eq('status', status);
+  }
+
+  const { data, error } = await query;
 
   if (error) throw error;
   
@@ -70,9 +81,11 @@ const getStatusStyle = (status: CaseWithDebtor['status']) => {
 };
 
 const Collections = () => {
+  const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
+  
   const { data: cases, isLoading, error } = useQuery({
-    queryKey: ['cases'],
-    queryFn: fetchCasesWithDebtors,
+    queryKey: ['cases', selectedStatus],
+    queryFn: () => fetchCasesWithDebtors(selectedStatus),
   });
 
   if (isLoading) {
@@ -85,7 +98,23 @@ const Collections = () => {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Collections</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Collections</h1>
+        <Select
+          value={selectedStatus || ""}
+          onValueChange={(value) => setSelectedStatus(value || null)}
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filter by status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">All statuses</SelectItem>
+            <SelectItem value="ACTIVE">Active</SelectItem>
+            <SelectItem value="CLOSED">Closed</SelectItem>
+            <SelectItem value="SUSPENDED">Suspended</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
       <div className="rounded-lg border">
         <Table>
           <TableHeader>
