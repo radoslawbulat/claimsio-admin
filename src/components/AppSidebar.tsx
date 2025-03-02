@@ -8,25 +8,24 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import {
   LayoutDashboard,
+  Briefcase,
   Users,
-  AlertCircle,
+  Calendar,
   CreditCard,
   Settings,
-  Folder,
   LogOut,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 
-const collectionsSubMenu = [
+const menuItems = [
+  { title: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
+  { title: "Portfolios", icon: Briefcase, path: "/portfolios" },
   { title: "Debtors", icon: Users, path: "/debtors" },
-  { title: "Disputes", icon: AlertCircle, path: "/disputes" },
+  { title: "Events", icon: Calendar, path: "/events" },
   { title: "Payments", icon: CreditCard, path: "/payments" },
 ];
 
@@ -60,63 +59,23 @@ const AppSidebar = () => {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <NavLink
-                    to="/dashboard"
-                    className={({ isActive }) =>
-                      `flex flex-col items-center gap-2 w-full ${
-                        isActive ? "text-primary" : "text-muted-foreground"
-                      }`
-                    }
-                  >
-                    <LayoutDashboard className="h-5 w-5" />
-                    <span className="text-sm">Dashboard</span>
-                  </NavLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              <SidebarMenuItem>
-                <SidebarMenuButton className="flex flex-col items-center gap-2 w-full text-muted-foreground">
-                  <Folder className="h-5 w-5" />
-                  <span className="text-sm">Collections</span>
-                </SidebarMenuButton>
-                <SidebarMenuSub>
-                  {collectionsSubMenu.map((item) => (
-                    <SidebarMenuSubItem key={item.title}>
-                      <SidebarMenuSubButton asChild>
-                        <NavLink
-                          to={item.path}
-                          className={({ isActive }) =>
-                            `flex items-center gap-2 ${
-                              isActive ? "text-primary" : "text-muted-foreground"
-                            }`
-                          }
-                        >
-                          <item.icon className="h-4 w-4" />
-                          <span>{item.title}</span>
-                        </NavLink>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
-                </SidebarMenuSub>
-              </SidebarMenuItem>
-
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <NavLink
-                    to="/settings"
-                    className={({ isActive }) =>
-                      `flex flex-col items-center gap-2 w-full ${
-                        isActive ? "text-primary" : "text-muted-foreground"
-                      }`
-                    }
-                  >
-                    <Settings className="h-5 w-5" />
-                    <span className="text-sm">Settings</span>
-                  </NavLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              {menuItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <NavLink
+                      to={item.path}
+                      className={({ isActive }) =>
+                        `flex items-center gap-2 w-full ${
+                          isActive ? "text-primary" : "text-muted-foreground"
+                        }`
+                      }
+                    >
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.title}</span>
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -125,12 +84,27 @@ const AppSidebar = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <NavLink
+                    to="/settings"
+                    className={({ isActive }) =>
+                      `flex items-center gap-2 w-full ${
+                        isActive ? "text-primary" : "text-muted-foreground"
+                      }`
+                    }
+                  >
+                    <Settings className="h-4 w-4" />
+                    <span>Settings</span>
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
                 <SidebarMenuButton
                   onClick={handleLogout}
-                  className="flex flex-col items-center gap-2 w-full text-destructive hover:text-destructive/90"
+                  className="flex items-center gap-2 w-full text-destructive hover:text-destructive/90"
                 >
-                  <LogOut className="h-5 w-5" />
-                  <span className="text-sm">Logout</span>
+                  <LogOut className="h-4 w-4" />
+                  <span>Logout</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
