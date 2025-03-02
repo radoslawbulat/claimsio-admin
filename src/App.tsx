@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { ThemeProvider } from "./components/theme-provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -18,17 +19,30 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import Collections from "./pages/Collections";
+import { Toaster as ToastComponent } from "@/components/ui/toaster";
 
 const queryClient = new QueryClient();
 
 function App() {
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <div className="min-h-screen flex w-full">
+        <div className="min-h-screen w-full bg-background">
           <BrowserRouter>
-            <AppSidebar />
-            <main className="flex-1">
+            {user && <AppSidebar />}
+            <main className={`${user ? 'ml-64' : ''} flex-1`}>
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/login" element={<Login />} />
@@ -52,6 +66,7 @@ function App() {
               </Routes>
             </main>
           </BrowserRouter>
+          <ToastComponent />
           <Toaster />
         </div>
       </ThemeProvider>
