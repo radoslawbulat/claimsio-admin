@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -35,15 +34,12 @@ const CaseDetails = () => {
   return (
     <div className="p-6">
       <div className="mb-8">
-        <Button variant="ghost" asChild className="mb-4">
+        <Button variant="ghost" asChild>
           <Link to="/collections" className="flex items-center gap-2">
             <ArrowLeft size={16} />
             Back to Collections
           </Link>
         </Button>
-        <h1 className="text-3xl font-bold">
-          Case Details: {caseDetails.case_number}
-        </h1>
       </div>
 
       <div className="grid gap-6">
