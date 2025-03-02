@@ -5,28 +5,47 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import {
   LayoutDashboard,
-  Briefcase,
   Users,
-  Calendar,
+  AlertCircle,
   CreditCard,
   Settings,
   LogOut,
+  Folder,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 
 const menuItems = [
-  { title: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
-  { title: "Portfolios", icon: Briefcase, path: "/portfolios" },
-  { title: "Debtors", icon: Users, path: "/debtors" },
-  { title: "Events", icon: Calendar, path: "/events" },
-  { title: "Payments", icon: CreditCard, path: "/payments" },
+  { 
+    title: "Dashboard", 
+    icon: LayoutDashboard, 
+    path: "/dashboard" 
+  },
+  {
+    title: "Collections",
+    icon: Folder,
+    path: "/collections",
+    submenu: [
+      { title: "Debtors", icon: Users, path: "/debtors" },
+      { title: "Disputes", icon: AlertCircle, path: "/disputes" },
+      { title: "Payments", icon: CreditCard, path: "/payments" },
+    ]
+  },
+  { 
+    title: "Settings", 
+    icon: Settings, 
+    path: "/settings" 
+  },
 ];
 
 const AppSidebar = () => {
@@ -61,19 +80,50 @@ const AppSidebar = () => {
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink
-                      to={item.path}
-                      className={({ isActive }) =>
-                        `flex items-center gap-2 w-full ${
-                          isActive ? "text-primary" : "text-muted-foreground"
-                        }`
-                      }
-                    >
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </NavLink>
-                  </SidebarMenuButton>
+                  {item.submenu ? (
+                    <>
+                      <SidebarMenuButton className="flex flex-col items-center py-3">
+                        <item.icon className="h-5 w-5 mb-1" />
+                        <span className="text-xs">{item.title}</span>
+                      </SidebarMenuButton>
+                      <SidebarMenuSub>
+                        {item.submenu.map((subItem) => (
+                          <SidebarMenuSubItem key={subItem.title}>
+                            <SidebarMenuSubButton
+                              asChild
+                              className="flex items-center gap-2"
+                            >
+                              <NavLink
+                                to={subItem.path}
+                                className={({ isActive }) =>
+                                  `flex items-center gap-2 w-full ${
+                                    isActive ? "text-primary" : "text-muted-foreground"
+                                  }`
+                                }
+                              >
+                                <subItem.icon className="h-4 w-4" />
+                                <span>{subItem.title}</span>
+                              </NavLink>
+                            </SidebarMenuSubButton>
+                          </SidebarMenuSubItem>
+                        ))}
+                      </SidebarMenuSub>
+                    </>
+                  ) : (
+                    <SidebarMenuButton asChild>
+                      <NavLink
+                        to={item.path}
+                        className={({ isActive }) =>
+                          `flex flex-col items-center py-3 w-full ${
+                            isActive ? "text-primary" : "text-muted-foreground"
+                          }`
+                        }
+                      >
+                        <item.icon className="h-5 w-5 mb-1" />
+                        <span className="text-xs">{item.title}</span>
+                      </NavLink>
+                    </SidebarMenuButton>
+                  )}
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
@@ -84,27 +134,12 @@ const AppSidebar = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <NavLink
-                    to="/settings"
-                    className={({ isActive }) =>
-                      `flex items-center gap-2 w-full ${
-                        isActive ? "text-primary" : "text-muted-foreground"
-                      }`
-                    }
-                  >
-                    <Settings className="h-4 w-4" />
-                    <span>Settings</span>
-                  </NavLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
                 <SidebarMenuButton
                   onClick={handleLogout}
-                  className="flex items-center gap-2 w-full text-destructive hover:text-destructive/90"
+                  className="flex flex-col items-center py-3 w-full text-destructive hover:text-destructive/90"
                 >
-                  <LogOut className="h-4 w-4" />
-                  <span>Logout</span>
+                  <LogOut className="h-5 w-5 mb-1" />
+                  <span className="text-xs">Logout</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -116,4 +151,3 @@ const AppSidebar = () => {
 };
 
 export default AppSidebar;
-
