@@ -163,7 +163,6 @@ export type Database = {
           first_name: string
           id: string
           language: string | null
-          last_contacted_at: string | null
           last_name: string
           personal_id: string | null
           phone_number: string | null
@@ -178,7 +177,6 @@ export type Database = {
           first_name: string
           id?: string
           language?: string | null
-          last_contacted_at?: string | null
           last_name: string
           personal_id?: string | null
           phone_number?: string | null
@@ -193,7 +191,6 @@ export type Database = {
           first_name?: string
           id?: string
           language?: string | null
-          last_contacted_at?: string | null
           last_name?: string
           personal_id?: string | null
           phone_number?: string | null
@@ -299,7 +296,7 @@ export type Database = {
     }
     Enums: {
       case_priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT"
-      case_status: "ACTIVE" | "CLOSED" | "SUSPENDED"
+      case_status: "ACTIVE" | "CLOSED"
       comms_direction: "inbound" | "outbound"
       comms_status: "pending" | "completed" | "failed" | "cancelled"
       comms_type: "call" | "email" | "sms"
