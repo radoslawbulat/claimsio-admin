@@ -47,7 +47,9 @@ const fetchCasesWithDebtors = async (status: CaseWithDebtor['status'] | 'ALL' | 
       currency,
       debtor:debtors(first_name, last_name),
       latest_comm:comms(created_at)
-    `)
+    `, {
+      count: 'exact'
+    })
     .order('created_at', { ascending: false });
 
   if (status && status !== 'ALL') {
@@ -58,11 +60,13 @@ const fetchCasesWithDebtors = async (status: CaseWithDebtor['status'] | 'ALL' | 
 
   if (error) throw error;
   
-  // Transform the data to match our type
+  // Transform the data to match our type, getting the most recent communication
   const transformedData = data.map(item => ({
     ...item,
     latest_comm: item.latest_comm && item.latest_comm.length > 0
-      ? { created_at: item.latest_comm[0].created_at }
+      ? { created_at: item.latest_comm.reduce((latest: string, current: { created_at: string }) => 
+          new Date(current.created_at) > new Date(latest) ? current.created_at : latest
+        , item.latest_comm[0].created_at) }
       : null
   }));
 
