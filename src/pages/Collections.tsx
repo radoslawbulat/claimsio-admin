@@ -35,7 +35,7 @@ type CaseWithDebtor = {
   } | null;
 }
 
-const fetchCasesWithDebtors = async (status: string | null) => {
+const fetchCasesWithDebtors = async (status: CaseWithDebtor['status'] | null) => {
   let query = supabase
     .from('cases')
     .select(`
@@ -81,7 +81,7 @@ const getStatusStyle = (status: CaseWithDebtor['status']) => {
 };
 
 const Collections = () => {
-  const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<CaseWithDebtor['status'] | null>(null);
   
   const { data: cases, isLoading, error } = useQuery({
     queryKey: ['cases', selectedStatus],
@@ -102,7 +102,7 @@ const Collections = () => {
         <h1 className="text-2xl font-bold">Collections</h1>
         <Select
           value={selectedStatus || ""}
-          onValueChange={(value) => setSelectedStatus(value || null)}
+          onValueChange={(value) => setSelectedStatus(value as CaseWithDebtor['status'] | null)}
         >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Filter by status" />
