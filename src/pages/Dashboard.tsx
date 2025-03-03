@@ -59,15 +59,15 @@ const Dashboard = () => {
   }));
 
   return (
-    <div className="space-y-4 animate-fade-in bg-[#f9fafb] min-h-screen p-4">
+    <div className="space-y-3 animate-fade-in bg-[#f9fafb] min-h-screen p-3">
       {/* Header Section */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">Performance</h1>
+          <h1 className="text-base font-medium text-gray-900">Performance</h1>
         </div>
         <div className="flex items-center gap-2">
           <Select defaultValue="all">
-            <SelectTrigger className="w-[160px] h-8 text-sm">
+            <SelectTrigger className="w-[140px] h-8 text-xs">
               <SelectValue placeholder="Select portfolio" />
             </SelectTrigger>
             <SelectContent>
@@ -77,64 +77,64 @@ const Dashboard = () => {
           </Select>
           <Button 
             size="sm"
-            className="gap-1"
+            className="gap-1 h-8 text-xs"
             onClick={() => setIsAddDebtorOpen(true)}
           >
-            <PlusCircle size={16} />
+            <PlusCircle size={14} />
             Add a debtor
           </Button>
         </div>
       </div>
 
       {/* Core Metrics Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
         <Card className="border-none shadow-sm bg-white">
-          <CardHeader className="pb-1 pt-3 px-4">
+          <CardHeader className="pb-1 pt-2 px-3">
             <CardTitle className="text-xs font-medium text-secondary">
               Portfolio Value
             </CardTitle>
           </CardHeader>
-          <CardContent className="pb-3 px-4">
-            <div className="text-lg font-bold">
+          <CardContent className="pb-2 px-3">
+            <div className="text-sm font-semibold">
               {isLoading ? "Loading..." : error ? "Error" : formatCurrency(analytics.portfolioValue)}
             </div>
           </CardContent>
         </Card>
 
         <Card className="border-none shadow-sm bg-white">
-          <CardHeader className="pb-1 pt-3 px-4">
+          <CardHeader className="pb-1 pt-2 px-3">
             <CardTitle className="text-xs font-medium text-secondary">
               Recovered Value
             </CardTitle>
           </CardHeader>
-          <CardContent className="pb-3 px-4">
-            <div className="text-lg font-bold">
+          <CardContent className="pb-2 px-3">
+            <div className="text-sm font-semibold">
               {isLoading ? "Loading..." : error ? "Error" : formatCurrency(analytics.recoveredValue)}
             </div>
           </CardContent>
         </Card>
 
         <Card className="border-none shadow-sm bg-white">
-          <CardHeader className="pb-1 pt-3 px-4">
+          <CardHeader className="pb-1 pt-2 px-3">
             <CardTitle className="text-xs font-medium text-secondary">
               Recovery Rate
             </CardTitle>
           </CardHeader>
-          <CardContent className="pb-3 px-4">
-            <div className="text-lg font-bold">
+          <CardContent className="pb-2 px-3">
+            <div className="text-sm font-semibold">
               {isLoading ? "Loading..." : error ? "Error" : `${analytics.recoveryRate}%`}
             </div>
           </CardContent>
         </Card>
 
         <Card className="border-none shadow-sm bg-white">
-          <CardHeader className="pb-1 pt-3 px-4">
+          <CardHeader className="pb-1 pt-2 px-3">
             <CardTitle className="text-xs font-medium text-secondary">
               Active Cases
             </CardTitle>
           </CardHeader>
-          <CardContent className="pb-3 px-4">
-            <div className="text-lg font-bold">
+          <CardContent className="pb-2 px-3">
+            <div className="text-sm font-semibold">
               {isLoading ? "Loading..." : error ? "Error" : formatNumber(analytics.activeCases)}
             </div>
           </CardContent>
@@ -143,11 +143,11 @@ const Dashboard = () => {
 
       {/* Portfolio Aging Section */}
       <Card className="border-none shadow-sm bg-white">
-        <CardHeader className="py-3 px-4">
+        <CardHeader className="py-2 px-3">
           <CardTitle className="text-sm">Portfolio Aging</CardTitle>
         </CardHeader>
         <CardContent className="px-2">
-          <div className="h-[300px] w-full">
+          <div className="h-[250px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart 
                 data={isLoadingAging ? [] : colorizedAgingData} 

@@ -49,36 +49,36 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-accent/50">
-      <div className="w-full max-w-md p-4 animate-fade-in">
+      <div className="w-full max-w-sm p-3 animate-fade-in">
         <Card className="border-none shadow-lg">
-          <CardHeader className="space-y-1 flex flex-col items-center">
-            <CardTitle className="text-2xl font-bold text-gray-900">
+          <CardHeader className="space-y-0.5 flex flex-col items-center py-4">
+            <CardTitle className="text-lg font-semibold text-gray-900">
               Debt Collector Access
             </CardTitle>
-            <p className="text-[#8E9196] text-base">
+            <p className="text-[#8E9196] text-sm">
               Please login to access your account
             </p>
           </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
+          <CardContent className="pb-4">
+            <form onSubmit={handleSubmit} className="space-y-3">
+              <div className="space-y-1.5">
                 <Input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full text-base placeholder:text-[#8E9196] focus:border-primary"
+                  className="w-full h-9 text-sm placeholder:text-[#8E9196] focus:border-primary"
                   required
                   disabled={isLoading}
                   autoComplete="email"
                   placeholder="Email"
                 />
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full text-base placeholder:text-[#8E9196] focus:border-primary"
+                  className="w-full h-9 text-sm placeholder:text-[#8E9196] focus:border-primary"
                   required
                   disabled={isLoading}
                   autoComplete="current-password"
@@ -87,7 +87,7 @@ const Login = () => {
               </div>
               <Button
                 type="submit"
-                className="w-full bg-[#1A1F2C] hover:bg-[#1A1F2C]/90 text-white"
+                className="w-full h-9 text-sm bg-[#1A1F2C] hover:bg-[#1A1F2C]/90 text-white"
                 disabled={isLoading}
               >
                 {isLoading ? "Signing in..." : "Sign In"}
