@@ -71,7 +71,7 @@ const Dashboard = () => {
         data={agingData || []}
       />
 
-      <div className="bg-white rounded-lg shadow-sm p-6">
+      <div className="bg-white rounded-lg border border-input p-6">
         <h2 className="text-xl font-semibold mb-4">Latest Activity</h2>
         <CollectionsTable />
       </div>
