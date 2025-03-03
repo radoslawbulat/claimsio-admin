@@ -1,4 +1,3 @@
-
 export type CaseWithDetails = {
   id: string;
   case_number: string;
@@ -34,3 +33,18 @@ export type Communication = {
   updated_at: string;
 }
 
+export type CaseWithDebtor = {
+  id: string;
+  case_number: string;
+  debt_remaining: number;
+  status: "ACTIVE" | "CLOSED" | "SUSPENDED";
+  due_date: string;
+  currency: string;
+  debtor: {
+    first_name: string;
+    last_name: string;
+  } | null;
+  latest_comm: {
+    created_at: string;
+  } | null;
+}
