@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { CoreMetrics } from "@/components/dashboard/CoreMetrics";
 import { PortfolioAging } from "@/components/dashboard/PortfolioAging";
+import { CollectionsTable } from "@/components/dashboard/CollectionsTable";
 
 const fetchAnalytics = async () => {
   const { data, error } = await supabase.functions.invoke('get-analytics');
@@ -70,6 +70,11 @@ const Dashboard = () => {
         isLoading={isLoadingAging}
         data={agingData || []}
       />
+
+      <div className="bg-white rounded-lg shadow-sm p-6">
+        <h2 className="text-xl font-semibold mb-4">Latest Cases</h2>
+        <CollectionsTable />
+      </div>
 
       <AddDebtorModal 
         isOpen={isAddDebtorOpen}
