@@ -195,45 +195,45 @@ const Collections = () => {
             <TableRow>
               <TableHead 
                 onClick={() => handleSort('case_number')}
-                className="cursor-pointer hover:bg-muted/50"
+                className="cursor-pointer hover:bg-muted/50 group"
               >
                 ID
-                <ArrowUpDown className="ml-2 h-4 w-4 inline" />
+                <ArrowUpDown className="ml-2 h-4 w-4 inline opacity-0 group-hover:opacity-100 transition-opacity" />
               </TableHead>
               <TableHead 
                 onClick={() => handleSort('debtor')}
-                className="cursor-pointer hover:bg-muted/50"
+                className="cursor-pointer hover:bg-muted/50 group"
               >
                 Debtor
-                <ArrowUpDown className="ml-2 h-4 w-4 inline" />
+                <ArrowUpDown className="ml-2 h-4 w-4 inline opacity-0 group-hover:opacity-100 transition-opacity" />
               </TableHead>
               <TableHead 
                 onClick={() => handleSort('debt_remaining')}
-                className="cursor-pointer hover:bg-muted/50"
+                className="cursor-pointer hover:bg-muted/50 group"
               >
                 Debt Amount
-                <ArrowUpDown className="ml-2 h-4 w-4 inline" />
+                <ArrowUpDown className="ml-2 h-4 w-4 inline opacity-0 group-hover:opacity-100 transition-opacity" />
               </TableHead>
               <TableHead 
                 onClick={() => handleSort('status')}
-                className="cursor-pointer hover:bg-muted/50"
+                className="cursor-pointer hover:bg-muted/50 group"
               >
                 Status
-                <ArrowUpDown className="ml-2 h-4 w-4 inline" />
+                <ArrowUpDown className="ml-2 h-4 w-4 inline opacity-0 group-hover:opacity-100 transition-opacity" />
               </TableHead>
               <TableHead 
                 onClick={() => handleSort('due_date')}
-                className="cursor-pointer hover:bg-muted/50"
+                className="cursor-pointer hover:bg-muted/50 group"
               >
                 Due Date
-                <ArrowUpDown className="ml-2 h-4 w-4 inline" />
+                <ArrowUpDown className="ml-2 h-4 w-4 inline opacity-0 group-hover:opacity-100 transition-opacity" />
               </TableHead>
               <TableHead 
                 onClick={() => handleSort('latest_comm')}
-                className="cursor-pointer hover:bg-muted/50"
+                className="cursor-pointer hover:bg-muted/50 group"
               >
                 Last Activity
-                <ArrowUpDown className="ml-2 h-4 w-4 inline" />
+                <ArrowUpDown className="ml-2 h-4 w-4 inline opacity-0 group-hover:opacity-100 transition-opacity" />
               </TableHead>
             </TableRow>
           </TableHeader>
