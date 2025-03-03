@@ -35,7 +35,7 @@ const Dashboard = () => {
   });
 
   return (
-    <div className="space-y-8 animate-fade-in bg-[#f9fafb] min-h-screen p-6">
+    <div className="space-y-8 animate-fade-in p-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">Performance</h1>
