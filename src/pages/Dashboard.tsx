@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { CoreMetrics } from "@/components/dashboard/CoreMetrics";
 import { PortfolioAging } from "@/components/dashboard/PortfolioAging";
 import { CollectionsTable } from "@/components/dashboard/CollectionsTable";
+import { RecoveryTrends } from "@/components/dashboard/RecoveryTrends";
 
 const fetchAnalytics = async () => {
   const { data, error } = await supabase.functions.invoke('get-analytics');
@@ -18,6 +18,12 @@ const fetchAnalytics = async () => {
 
 const fetchAgingData = async () => {
   const { data, error } = await supabase.functions.invoke('get-aging-data');
+  if (error) throw error;
+  return data;
+};
+
+const fetchRecoveryTrends = async () => {
+  const { data, error } = await supabase.functions.invoke('get-recovery-trends');
   if (error) throw error;
   return data;
 };
@@ -33,6 +39,11 @@ const Dashboard = () => {
   const { data: agingData, isLoading: isLoadingAging } = useQuery({
     queryKey: ['aging-data'],
     queryFn: fetchAgingData
+  });
+
+  const { data: recoveryTrends, isLoading: isLoadingRecoveryTrends } = useQuery({
+    queryKey: ['recovery-trends'],
+    queryFn: fetchRecoveryTrends
   });
 
   return (
@@ -72,12 +83,10 @@ const Dashboard = () => {
           isLoading={isLoadingAging}
           data={agingData || []}
         />
-        <div className="bg-white rounded-lg p-6">
-          <h2 className="text-xl font-semibold mb-4">Recovery Trends</h2>
-          <div className="flex items-center justify-center h-full">
-            <p className="text-muted-foreground">Coming soon</p>
-          </div>
-        </div>
+        <RecoveryTrends 
+          isLoading={isLoadingRecoveryTrends}
+          data={recoveryTrends || []}
+        />
       </div>
 
       <div className="bg-white rounded-lg border border-input p-6">
