@@ -17,37 +17,68 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') as string;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Get all payments grouped by year
+    // Get all payments grouped by month and priority
     const { data, error } = await supabase
       .from('payments')
-      .select('created_at, amount_received')
+      .select('created_at, amount_received, priority')
       .eq('status', 'completed')
       .order('created_at');
 
     if (error) throw error;
 
-    // Process the data to get yearly cumulative totals
-    const yearlyTotals = data.reduce((acc: any[], payment) => {
+    // Process the data to get monthly cumulative totals by priority
+    const monthlyData = data.reduce((acc: any, payment) => {
       const date = new Date(payment.created_at);
-      const yearKey = date.getFullYear().toString();
+      const monthKey = date.toLocaleString('en-US', { month: 'short', year: 'numeric' });
       
-      const existingYear = acc.find(item => item.year === yearKey);
-      if (existingYear) {
-        existingYear.amount += payment.amount_received;
+      if (!acc[monthKey]) {
+        acc[monthKey] = {
+          month: monthKey,
+          low: 0,
+          medium: 0,
+          high: 0,
+          critical: 0
+        };
+      }
+      
+      // Add to the appropriate priority bucket
+      switch(payment.priority) {
+        case 'low':
+          acc[monthKey].low += payment.amount_received;
+          break;
+        case 'medium':
+          acc[monthKey].medium += payment.amount_received;
+          break;
+        case 'high':
+          acc[monthKey].high += payment.amount_received;
+          break;
+        case 'critical':
+          acc[monthKey].critical += payment.amount_received;
+          break;
+      }
+      
+      return acc;
+    }, {});
+
+    // Convert to array and make cumulative
+    const result = Object.values(monthlyData).reduce((acc: any[], curr: any, index: number) => {
+      if (index === 0) {
+        acc.push(curr);
       } else {
-        // If it's a new year, add previous year's total to maintain cumulative value
-        const previousTotal = acc.length > 0 ? acc[acc.length - 1].amount : 0;
         acc.push({
-          year: yearKey,
-          amount: previousTotal + payment.amount_received
+          month: curr.month,
+          low: curr.low + acc[index - 1].low,
+          medium: curr.medium + acc[index - 1].medium,
+          high: curr.high + acc[index - 1].high,
+          critical: curr.critical + acc[index - 1].critical
         });
       }
       return acc;
     }, []);
 
-    console.log('Yearly recovery trends calculated:', yearlyTotals);
+    console.log('Monthly recovery trends calculated:', result);
 
-    return new Response(JSON.stringify(yearlyTotals), {
+    return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
