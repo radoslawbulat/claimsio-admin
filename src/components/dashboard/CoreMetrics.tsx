@@ -31,7 +31,7 @@ export const CoreMetrics = ({ isLoading, error, analytics }: CoreMetricsProps) =
       <Card className="border-none shadow-md bg-white">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium text-secondary">
-            Portfolio Value
+            In collection
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -44,7 +44,7 @@ export const CoreMetrics = ({ isLoading, error, analytics }: CoreMetricsProps) =
       <Card className="border-none shadow-md bg-white">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium text-secondary">
-            Recovered Value
+            Recovered
           </CardTitle>
         </CardHeader>
         <CardContent>
