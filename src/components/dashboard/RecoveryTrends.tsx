@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
+import { Line, LineChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 
 interface RecoveryTrendsProps {
   isLoading: boolean;
@@ -25,16 +25,10 @@ export const RecoveryTrends = ({ isLoading, data }: RecoveryTrendsProps) => {
       <CardContent>
         <div className="h-[300px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart
+            <LineChart
               data={isLoading ? [] : data}
               margin={{ top: 10, right: 30, left: 40, bottom: 20 }}
             >
-              <defs>
-                <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#2563EB" stopOpacity={0.1}/>
-                  <stop offset="95%" stopColor="#2563EB" stopOpacity={0}/>
-                </linearGradient>
-              </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
               <XAxis
                 dataKey="year"
@@ -54,17 +48,23 @@ export const RecoveryTrends = ({ isLoading, data }: RecoveryTrendsProps) => {
                   boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)'
                 }}
               />
-              <Area
+              <Line
                 type="monotone"
                 dataKey="amount"
                 stroke="#2563EB"
-                fillOpacity={1}
-                fill="url(#colorAmount)"
+                strokeWidth={2}
+                dot={{
+                  stroke: '#2563EB',
+                  strokeWidth: 2,
+                  fill: 'white',
+                  r: 4
+                }}
               />
-            </AreaChart>
+            </LineChart>
           </ResponsiveContainer>
         </div>
       </CardContent>
     </Card>
   );
 };
+
