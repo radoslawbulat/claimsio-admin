@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
@@ -41,12 +41,13 @@ const fetchCasesWithDebtors = async () => {
       latest_comm:comms(created_at)
     `)
     .order('created_at', { ascending: false })
-    .limit(5);  // Only fetch the 5 most recent cases for the dashboard
+    .limit(5);
 
   const { data, error } = await query;
 
   if (error) throw error;
   
+  // Transform and sort by latest communication date
   const transformedData = data.map(item => ({
     ...item,
     latest_comm: item.latest_comm && item.latest_comm.length > 0
@@ -56,7 +57,12 @@ const fetchCasesWithDebtors = async () => {
       : null
   }));
 
-  return transformedData as CaseWithDebtor[];
+  // Sort by latest communication date
+  return transformedData.sort((a, b) => {
+    const dateA = a.latest_comm ? new Date(a.latest_comm.created_at).getTime() : 0;
+    const dateB = b.latest_comm ? new Date(b.latest_comm.created_at).getTime() : 0;
+    return dateB - dateA;
+  }) as CaseWithDebtor[];
 };
 
 export const CollectionsTable = () => {
