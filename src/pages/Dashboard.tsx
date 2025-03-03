@@ -7,7 +7,6 @@ import { PlusCircle } from "lucide-react";
 import AddDebtorModal from "@/components/AddDebtorModal";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { PaymentsActivity } from "@/components/dashboard/PaymentsActivity";
 
 const fetchAnalytics = async () => {
   const { data, error } = await supabase.functions.invoke('get-analytics');
@@ -200,9 +199,6 @@ const Dashboard = () => {
           </div>
         </CardContent>
       </Card>
-
-      {/* Payments Activity Section */}
-      <PaymentsActivity />
 
       <AddDebtorModal 
         isOpen={isAddDebtorOpen}
