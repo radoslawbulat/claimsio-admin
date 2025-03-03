@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
@@ -27,7 +26,14 @@ const getStatusStyle = (status: CaseWithDebtor['status']) => {
   }
 };
 
-const fetchCasesWithDebtors = async () => {
+type SortConfig = {
+  column: 'case_number' | 'debtor' | 'debt_remaining' | 'status' | 'due_date' | 'latest_comm' | null;
+  direction: 'asc' | 'desc';
+};
+
+const fetchCasesWithDebtors = async (sortConfig: SortConfig) => {
+  console.log('Fetching cases with sort config:', sortConfig);
+  
   let query = supabase
     .from('cases')
     .select(`
@@ -40,14 +46,25 @@ const fetchCasesWithDebtors = async () => {
       debtor:debtors(first_name, last_name),
       latest_comm:comms(created_at)
     `)
-    .order('created_at', { ascending: false })
     .limit(5);
 
-  const { data, error } = await query;
+  // Apply server-side sorting if possible
+  if (sortConfig.column) {
+    switch (sortConfig.column) {
+      case 'case_number':
+      case 'debt_remaining':
+      case 'status':
+      case 'due_date':
+        query = query.order(sortConfig.column, { 
+          ascending: sortConfig.direction === 'asc'
+        });
+        break;
+    }
+  }
 
+  const { data, error } = await query;
   if (error) throw error;
-  
-  // Transform and sort by latest communication date
+
   const transformedData = data.map(item => ({
     ...item,
     latest_comm: item.latest_comm && item.latest_comm.length > 0
@@ -57,21 +74,46 @@ const fetchCasesWithDebtors = async () => {
       : null
   }));
 
-  // Sort by latest communication date
-  return transformedData.sort((a, b) => {
-    const dateA = a.latest_comm ? new Date(a.latest_comm.created_at).getTime() : 0;
-    const dateB = b.latest_comm ? new Date(b.latest_comm.created_at).getTime() : 0;
-    return dateB - dateA;
-  }) as CaseWithDebtor[];
+  let sortedData = [...transformedData];
+
+  // Apply client-side sorting for complex fields
+  if (sortConfig.column) {
+    sortedData.sort((a, b) => {
+      const direction = sortConfig.direction === 'asc' ? 1 : -1;
+
+      switch (sortConfig.column) {
+        case 'debtor':
+          const aName = a.debtor ? `${a.debtor.first_name} ${a.debtor.last_name}` : '';
+          const bName = b.debtor ? `${b.debtor.first_name} ${b.debtor.last_name}` : '';
+          return aName.localeCompare(bName) * direction;
+        case 'latest_comm':
+          const aTime = a.latest_comm ? new Date(a.latest_comm.created_at).getTime() : 0;
+          const bTime = b.latest_comm ? new Date(b.latest_comm.created_at).getTime() : 0;
+          return (aTime - bTime) * direction;
+        default:
+          return 0;
+      }
+    });
+  }
+
+  return sortedData as CaseWithDebtor[];
 };
 
 export const CollectionsTable = () => {
   const navigate = useNavigate();
+  const [sortConfig, setSortConfig] = useState<SortConfig>({ column: null, direction: 'asc' });
   
   const { data: cases, isLoading } = useQuery({
-    queryKey: ['dashboard-cases'],
-    queryFn: fetchCasesWithDebtors,
+    queryKey: ['dashboard-cases', sortConfig],
+    queryFn: () => fetchCasesWithDebtors(sortConfig),
   });
+
+  const handleSort = (column: SortConfig['column']) => {
+    setSortConfig(current => ({
+      column,
+      direction: current.column === column && current.direction === 'asc' ? 'desc' : 'asc'
+    }));
+  };
 
   const handleRowClick = (caseId: string) => {
     navigate(`/case/${caseId}`);
@@ -86,29 +128,59 @@ export const CollectionsTable = () => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="group">
+            <TableHead 
+              onClick={() => handleSort('case_number')}
+              className="group cursor-pointer"
+            >
               ID
-              <ArrowUpDown className="ml-2 h-4 w-4 inline opacity-0 group-hover:opacity-100 transition-opacity" />
+              <ArrowUpDown className={`ml-2 h-4 w-4 inline transition-opacity ${
+                sortConfig.column === 'case_number' ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+              }`} />
             </TableHead>
-            <TableHead className="group">
+            <TableHead 
+              onClick={() => handleSort('debtor')}
+              className="group cursor-pointer"
+            >
               Debtor
-              <ArrowUpDown className="ml-2 h-4 w-4 inline opacity-0 group-hover:opacity-100 transition-opacity" />
+              <ArrowUpDown className={`ml-2 h-4 w-4 inline transition-opacity ${
+                sortConfig.column === 'debtor' ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+              }`} />
             </TableHead>
-            <TableHead className="group">
+            <TableHead 
+              onClick={() => handleSort('debt_remaining')}
+              className="group cursor-pointer"
+            >
               Debt Amount
-              <ArrowUpDown className="ml-2 h-4 w-4 inline opacity-0 group-hover:opacity-100 transition-opacity" />
+              <ArrowUpDown className={`ml-2 h-4 w-4 inline transition-opacity ${
+                sortConfig.column === 'debt_remaining' ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+              }`} />
             </TableHead>
-            <TableHead className="group">
+            <TableHead 
+              onClick={() => handleSort('status')}
+              className="group cursor-pointer"
+            >
               Status
-              <ArrowUpDown className="ml-2 h-4 w-4 inline opacity-0 group-hover:opacity-100 transition-opacity" />
+              <ArrowUpDown className={`ml-2 h-4 w-4 inline transition-opacity ${
+                sortConfig.column === 'status' ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+              }`} />
             </TableHead>
-            <TableHead className="group">
+            <TableHead 
+              onClick={() => handleSort('due_date')}
+              className="group cursor-pointer"
+            >
               Due Date
-              <ArrowUpDown className="ml-2 h-4 w-4 inline opacity-0 group-hover:opacity-100 transition-opacity" />
+              <ArrowUpDown className={`ml-2 h-4 w-4 inline transition-opacity ${
+                sortConfig.column === 'due_date' ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+              }`} />
             </TableHead>
-            <TableHead className="group">
+            <TableHead 
+              onClick={() => handleSort('latest_comm')}
+              className="group cursor-pointer"
+            >
               Last Activity
-              <ArrowUpDown className="ml-2 h-4 w-4 inline opacity-0 group-hover:opacity-100 transition-opacity" />
+              <ArrowUpDown className={`ml-2 h-4 w-4 inline transition-opacity ${
+                sortConfig.column === 'latest_comm' ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+              }`} />
             </TableHead>
           </TableRow>
         </TableHeader>
