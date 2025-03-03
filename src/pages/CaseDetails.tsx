@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -32,17 +33,17 @@ const CaseDetails = () => {
   }
 
   return (
-    <div className="p-6">
-      <div className="mb-8">
-        <Button variant="ghost" asChild>
+    <div className="p-3">
+      <div className="mb-4">
+        <Button variant="ghost" asChild className="h-8 text-xs px-2">
           <Link to="/collections" className="flex items-center gap-2">
-            <ArrowLeft size={16} />
+            <ArrowLeft size={14} />
             Back to Collections
           </Link>
         </Button>
       </div>
 
-      <div className="grid gap-6">
+      <div className="grid gap-4">
         <CaseInformation caseDetails={caseDetails} />
         {caseDetails.debtor && (
           <DebtorInformation 
