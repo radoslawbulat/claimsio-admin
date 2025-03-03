@@ -17,7 +17,7 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') as string;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Get all payments grouped by month
+    // Get all payments grouped by year
     const { data, error } = await supabase
       .from('payments')
       .select('created_at, amount_received')
@@ -26,28 +26,28 @@ serve(async (req) => {
 
     if (error) throw error;
 
-    // Process the data to get monthly cumulative totals
-    const monthlyTotals = data.reduce((acc: any[], payment) => {
+    // Process the data to get yearly cumulative totals
+    const yearlyTotals = data.reduce((acc: any[], payment) => {
       const date = new Date(payment.created_at);
-      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      const yearKey = date.getFullYear().toString();
       
-      const existingMonth = acc.find(item => item.month === monthKey);
-      if (existingMonth) {
-        existingMonth.amount += payment.amount_received;
+      const existingYear = acc.find(item => item.year === yearKey);
+      if (existingYear) {
+        existingYear.amount += payment.amount_received;
       } else {
-        // If it's a new month, add previous month's total to maintain cumulative value
+        // If it's a new year, add previous year's total to maintain cumulative value
         const previousTotal = acc.length > 0 ? acc[acc.length - 1].amount : 0;
         acc.push({
-          month: monthKey,
+          year: yearKey,
           amount: previousTotal + payment.amount_received
         });
       }
       return acc;
     }, []);
 
-    console.log('Monthly recovery trends calculated:', monthlyTotals);
+    console.log('Yearly recovery trends calculated:', yearlyTotals);
 
-    return new Response(JSON.stringify(monthlyTotals), {
+    return new Response(JSON.stringify(yearlyTotals), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {

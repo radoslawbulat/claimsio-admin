@@ -4,7 +4,7 @@ import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianG
 
 interface RecoveryTrendsProps {
   isLoading: boolean;
-  data: { month: string; amount: number }[];
+  data: { year: string; amount: number }[];
 }
 
 const formatCurrency = (value: number) => {
@@ -16,16 +16,11 @@ const formatCurrency = (value: number) => {
   }).format(value);
 };
 
-const formatDate = (monthStr: string) => {
-  const [year, month] = monthStr.split('-');
-  return new Date(+year, +month - 1).toLocaleDateString('pl-PL', { month: 'short', year: 'numeric' });
-};
-
 export const RecoveryTrends = ({ isLoading, data }: RecoveryTrendsProps) => {
   return (
     <Card className="border-none bg-white w-full">
       <CardHeader>
-        <CardTitle>Recovery Trends</CardTitle>
+        <CardTitle>Cumulative Recovery by Year</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-[300px] w-full">
@@ -42,8 +37,7 @@ export const RecoveryTrends = ({ isLoading, data }: RecoveryTrendsProps) => {
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
               <XAxis
-                dataKey="month"
-                tickFormatter={formatDate}
+                dataKey="year"
                 tick={{ fill: '#6B7280', fontSize: 12 }}
               />
               <YAxis
@@ -52,7 +46,7 @@ export const RecoveryTrends = ({ isLoading, data }: RecoveryTrendsProps) => {
               />
               <Tooltip
                 formatter={(value: number) => formatCurrency(value)}
-                labelFormatter={formatDate}
+                labelFormatter={(year: string) => `Year ${year}`}
                 contentStyle={{
                   backgroundColor: 'white',
                   border: '1px solid #E5E7EB',
