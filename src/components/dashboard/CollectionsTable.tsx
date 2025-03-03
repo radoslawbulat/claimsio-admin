@@ -109,13 +109,16 @@ export const CollectionsTable = () => {
   });
 
   const handleSort = (column: SortConfig['column']) => {
+    // Prevent default behavior which might cause scrolling
     setSortConfig(current => ({
       column,
       direction: current.column === column && current.direction === 'asc' ? 'desc' : 'asc'
     }));
   };
 
-  const handleRowClick = (caseId: string) => {
+  const handleRowClick = (e: React.MouseEvent, caseId: string) => {
+    // Prevent event bubbling
+    e.preventDefault();
     navigate(`/case/${caseId}`);
   };
 
@@ -129,7 +132,10 @@ export const CollectionsTable = () => {
         <TableHeader>
           <TableRow>
             <TableHead 
-              onClick={() => handleSort('case_number')}
+              onClick={(e) => {
+                e.preventDefault();
+                handleSort('case_number');
+              }}
               className="group cursor-pointer"
             >
               ID
@@ -138,7 +144,10 @@ export const CollectionsTable = () => {
               }`} />
             </TableHead>
             <TableHead 
-              onClick={() => handleSort('debtor')}
+              onClick={(e) => {
+                e.preventDefault();
+                handleSort('debtor');
+              }}
               className="group cursor-pointer"
             >
               Debtor
@@ -147,7 +156,10 @@ export const CollectionsTable = () => {
               }`} />
             </TableHead>
             <TableHead 
-              onClick={() => handleSort('debt_remaining')}
+              onClick={(e) => {
+                e.preventDefault();
+                handleSort('debt_remaining');
+              }}
               className="group cursor-pointer"
             >
               Debt Amount
@@ -156,7 +168,10 @@ export const CollectionsTable = () => {
               }`} />
             </TableHead>
             <TableHead 
-              onClick={() => handleSort('status')}
+              onClick={(e) => {
+                e.preventDefault();
+                handleSort('status');
+              }}
               className="group cursor-pointer"
             >
               Status
@@ -165,7 +180,10 @@ export const CollectionsTable = () => {
               }`} />
             </TableHead>
             <TableHead 
-              onClick={() => handleSort('due_date')}
+              onClick={(e) => {
+                e.preventDefault();
+                handleSort('due_date');
+              }}
               className="group cursor-pointer"
             >
               Due Date
@@ -174,7 +192,10 @@ export const CollectionsTable = () => {
               }`} />
             </TableHead>
             <TableHead 
-              onClick={() => handleSort('latest_comm')}
+              onClick={(e) => {
+                e.preventDefault();
+                handleSort('latest_comm');
+              }}
               className="group cursor-pointer"
             >
               Last Activity
@@ -189,7 +210,7 @@ export const CollectionsTable = () => {
             cases.map((caseItem) => (
               <TableRow 
                 key={caseItem.id}
-                onClick={() => handleRowClick(caseItem.id)}
+                onClick={(e) => handleRowClick(e, caseItem.id)}
                 className="cursor-pointer hover:bg-muted"
               >
                 <TableCell className="font-medium">{caseItem.case_number}</TableCell>
