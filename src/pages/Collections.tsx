@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
@@ -86,7 +87,7 @@ const getStatusStyle = (status: CaseWithDebtor['status']) => {
 };
 
 type SortConfig = {
-  column: 'debt_remaining' | 'due_date' | 'latest_comm' | null;
+  column: 'case_number' | 'debtor' | 'debt_remaining' | 'status' | 'due_date' | 'latest_comm' | null;
   direction: 'asc' | 'desc';
 };
 
@@ -128,8 +129,16 @@ const Collections = () => {
       const direction = sortConfig.direction === 'asc' ? 1 : -1;
 
       switch (sortConfig.column) {
+        case 'case_number':
+          return a.case_number.localeCompare(b.case_number) * direction;
+        case 'debtor':
+          const aName = a.debtor ? `${a.debtor.first_name} ${a.debtor.last_name}` : '';
+          const bName = b.debtor ? `${b.debtor.first_name} ${b.debtor.last_name}` : '';
+          return aName.localeCompare(bName) * direction;
         case 'debt_remaining':
           return (a.debt_remaining - b.debt_remaining) * direction;
+        case 'status':
+          return a.status.localeCompare(b.status) * direction;
         case 'due_date':
           return (new Date(a.due_date).getTime() - new Date(b.due_date).getTime()) * direction;
         case 'latest_comm':
@@ -184,8 +193,20 @@ const Collections = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>ID</TableHead>
-              <TableHead>Debtor</TableHead>
+              <TableHead 
+                onClick={() => handleSort('case_number')}
+                className="cursor-pointer hover:bg-muted/50"
+              >
+                ID
+                <ArrowUpDown className="ml-2 h-4 w-4 inline" />
+              </TableHead>
+              <TableHead 
+                onClick={() => handleSort('debtor')}
+                className="cursor-pointer hover:bg-muted/50"
+              >
+                Debtor
+                <ArrowUpDown className="ml-2 h-4 w-4 inline" />
+              </TableHead>
               <TableHead 
                 onClick={() => handleSort('debt_remaining')}
                 className="cursor-pointer hover:bg-muted/50"
@@ -193,7 +214,13 @@ const Collections = () => {
                 Debt Amount
                 <ArrowUpDown className="ml-2 h-4 w-4 inline" />
               </TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead 
+                onClick={() => handleSort('status')}
+                className="cursor-pointer hover:bg-muted/50"
+              >
+                Status
+                <ArrowUpDown className="ml-2 h-4 w-4 inline" />
+              </TableHead>
               <TableHead 
                 onClick={() => handleSort('due_date')}
                 className="cursor-pointer hover:bg-muted/50"
