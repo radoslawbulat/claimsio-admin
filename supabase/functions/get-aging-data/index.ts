@@ -24,7 +24,6 @@ serve(async (req) => {
       .from('cases')
       .select('due_date, debt_remaining')
       .eq('status', 'ACTIVE')
-      .order('due_date')
 
     if (error) {
       console.error('Database error:', error)
