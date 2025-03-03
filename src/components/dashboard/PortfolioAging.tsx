@@ -55,7 +55,7 @@ export const PortfolioAging = ({ isLoading, data }: PortfolioAgingProps) => {
               <YAxis 
                 yAxisId="right"
                 orientation="right"
-                tick={{ fill: 'transparent' }}
+                hide={true}
               />
               <Tooltip 
                 formatter={(value: number, name: string) => {
