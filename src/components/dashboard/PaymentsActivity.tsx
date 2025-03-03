@@ -37,7 +37,7 @@ export const PaymentsActivity = () => {
   return (
     <Card className="border-none shadow-md bg-white">
       <CardHeader>
-        <CardTitle className="text-lg font-medium">Recent Payments</CardTitle>
+        <CardTitle className="text-lg font-medium">Latest activity</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="relative w-full overflow-auto">
