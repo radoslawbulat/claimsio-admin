@@ -11,39 +11,39 @@ interface DebtorInformationProps {
 export const DebtorInformation = ({ debtor, currency }: DebtorInformationProps) => {
   return (
     <Card>
-      <CardHeader className="p-4">
-        <CardTitle className="text-base">Debtor Information</CardTitle>
+      <CardHeader>
+        <CardTitle>Debtor Information</CardTitle>
       </CardHeader>
-      <CardContent className="p-4 pt-0 grid gap-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <CardContent className="grid gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <div className="text-xs text-muted-foreground mb-1">Name</div>
-            <div className="text-sm">{`${debtor.first_name} ${debtor.last_name}`}</div>
+            <div className="text-sm text-muted-foreground mb-1">Name</div>
+            <div>{`${debtor.first_name} ${debtor.last_name}`}</div>
           </div>
           <div>
-            <div className="text-xs text-muted-foreground mb-1">Email</div>
-            <div className="text-sm">{debtor.email || 'Not specified'}</div>
+            <div className="text-sm text-muted-foreground mb-1">Email</div>
+            <div>{debtor.email || 'Not specified'}</div>
           </div>
           <div>
-            <div className="text-xs text-muted-foreground mb-1">Phone</div>
-            <div className="text-sm">{debtor.phone_number || 'Not specified'}</div>
+            <div className="text-sm text-muted-foreground mb-1">Phone</div>
+            <div>{debtor.phone_number || 'Not specified'}</div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <div className="text-xs text-muted-foreground mb-1">Status</div>
-            <Badge variant="outline" className="text-xs">
+            <div className="text-sm text-muted-foreground mb-1">Status</div>
+            <Badge variant="outline">
               {debtor.status || 'Not specified'}
             </Badge>
           </div>
           <div>
-            <div className="text-xs text-muted-foreground mb-1">Language</div>
-            <div className="text-sm">{debtor.language || 'Not specified'}</div>
+            <div className="text-sm text-muted-foreground mb-1">Language</div>
+            <div>{debtor.language || 'Not specified'}</div>
           </div>
           <div>
-            <div className="text-xs text-muted-foreground mb-1">Total Debt</div>
-            <div className="text-sm">
+            <div className="text-sm text-muted-foreground mb-1">Total Debt</div>
+            <div>
               {new Intl.NumberFormat('en-US', {
                 style: 'currency',
                 currency: currency,

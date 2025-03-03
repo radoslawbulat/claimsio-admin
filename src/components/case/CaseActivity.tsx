@@ -42,12 +42,12 @@ export const CaseActivity = ({ communications }: CaseActivityProps) => {
 
   return (
     <Card>
-      <CardHeader className="p-4">
+      <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-base">Activity</CardTitle>
-          <div className="flex gap-2">
+          <CardTitle>Activity</CardTitle>
+          <div className="flex gap-4">
             <Select value={typeFilter} onValueChange={(value: any) => setTypeFilter(value)}>
-              <SelectTrigger className="w-[120px] h-8 text-xs">
+              <SelectTrigger className="w-[140px]">
                 <SelectValue placeholder="Type" />
               </SelectTrigger>
               <SelectContent>
@@ -58,7 +58,7 @@ export const CaseActivity = ({ communications }: CaseActivityProps) => {
               </SelectContent>
             </Select>
             <Select value={directionFilter} onValueChange={(value: any) => setDirectionFilter(value)}>
-              <SelectTrigger className="w-[120px] h-8 text-xs">
+              <SelectTrigger className="w-[140px]">
                 <SelectValue placeholder="Direction" />
               </SelectTrigger>
               <SelectContent>
@@ -80,22 +80,22 @@ export const CaseActivity = ({ communications }: CaseActivityProps) => {
           </div>
         </div>
       </CardHeader>
-      <CardContent className="p-4 pt-0">
+      <CardContent>
         {filteredComms && filteredComms.length > 0 ? (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {filteredComms.map((comm) => (
-              <div key={comm.id} className="flex items-start gap-3 p-3 border rounded-lg">
-                <div className="flex items-center justify-center w-6 h-6 rounded-full bg-accent">
+              <div key={comm.id} className="flex items-start gap-4 p-4 border rounded-lg">
+                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-accent">
                   {getCommsIcon(comm.comms_type)}
                 </div>
                 <div className="flex-1">
-                  <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-sm capitalize">{comm.comms_type}</span>
-                      <Badge className={`text-xs ${getCommsStatusColor(comm.status)}`}>
+                      <span className="font-medium capitalize">{comm.comms_type}</span>
+                      <Badge className={getCommsStatusColor(comm.status)}>
                         {comm.status}
                       </Badge>
-                      <Badge variant="outline" className="flex items-center gap-1 text-xs">
+                      <Badge variant="outline" className="flex items-center gap-1">
                         {comm.direction === 'inbound' ? (
                           <ArrowLeftFromLine className="h-3 w-3" />
                         ) : (
@@ -104,19 +104,19 @@ export const CaseActivity = ({ communications }: CaseActivityProps) => {
                         {comm.direction}
                       </Badge>
                     </div>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-sm text-muted-foreground">
                       {format(new Date(comm.created_at), 'PPpp')}
                     </span>
                   </div>
                   {comm.content && (
-                    <p className="text-xs text-muted-foreground">{comm.content}</p>
+                    <p className="text-sm text-muted-foreground">{comm.content}</p>
                   )}
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="text-center text-xs text-muted-foreground py-6">
+          <div className="text-center text-muted-foreground py-8">
             No communications recorded for this case
           </div>
         )}

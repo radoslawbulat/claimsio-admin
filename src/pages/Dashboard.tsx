@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, Line, ComposedChart } from "recharts";
@@ -59,15 +58,15 @@ const Dashboard = () => {
   }));
 
   return (
-    <div className="space-y-3 animate-fade-in bg-[#f9fafb] min-h-screen p-3">
+    <div className="space-y-8 animate-fade-in bg-[#f9fafb] min-h-screen p-6">
       {/* Header Section */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-base font-medium text-gray-900">Performance</h1>
+          <h1 className="text-2xl font-semibold text-gray-900">Performance</h1>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
           <Select defaultValue="all">
-            <SelectTrigger className="w-[140px] h-8 text-xs">
+            <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select portfolio" />
             </SelectTrigger>
             <SelectContent>
@@ -76,65 +75,64 @@ const Dashboard = () => {
             </SelectContent>
           </Select>
           <Button 
-            size="sm"
-            className="gap-1 h-8 text-xs"
+            className="gap-2"
             onClick={() => setIsAddDebtorOpen(true)}
           >
-            <PlusCircle size={14} />
+            <PlusCircle size={20} />
             Add a debtor
           </Button>
         </div>
       </div>
 
       {/* Core Metrics Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
-        <Card className="border-none shadow-sm bg-white">
-          <CardHeader className="pb-1 pt-2 px-3">
-            <CardTitle className="text-xs font-medium text-secondary">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card className="border-none shadow-md bg-white">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-secondary">
               Portfolio Value
             </CardTitle>
           </CardHeader>
-          <CardContent className="pb-2 px-3">
-            <div className="text-sm font-semibold">
+          <CardContent>
+            <div className="text-2xl font-bold">
               {isLoading ? "Loading..." : error ? "Error" : formatCurrency(analytics.portfolioValue)}
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-none shadow-sm bg-white">
-          <CardHeader className="pb-1 pt-2 px-3">
-            <CardTitle className="text-xs font-medium text-secondary">
+        <Card className="border-none shadow-md bg-white">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-secondary">
               Recovered Value
             </CardTitle>
           </CardHeader>
-          <CardContent className="pb-2 px-3">
-            <div className="text-sm font-semibold">
+          <CardContent>
+            <div className="text-2xl font-bold">
               {isLoading ? "Loading..." : error ? "Error" : formatCurrency(analytics.recoveredValue)}
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-none shadow-sm bg-white">
-          <CardHeader className="pb-1 pt-2 px-3">
-            <CardTitle className="text-xs font-medium text-secondary">
+        <Card className="border-none shadow-md bg-white">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-secondary">
               Recovery Rate
             </CardTitle>
           </CardHeader>
-          <CardContent className="pb-2 px-3">
-            <div className="text-sm font-semibold">
+          <CardContent>
+            <div className="text-2xl font-bold">
               {isLoading ? "Loading..." : error ? "Error" : `${analytics.recoveryRate}%`}
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-none shadow-sm bg-white">
-          <CardHeader className="pb-1 pt-2 px-3">
-            <CardTitle className="text-xs font-medium text-secondary">
+        <Card className="border-none shadow-md bg-white">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-secondary">
               Active Cases
             </CardTitle>
           </CardHeader>
-          <CardContent className="pb-2 px-3">
-            <div className="text-sm font-semibold">
+          <CardContent>
+            <div className="text-2xl font-bold">
               {isLoading ? "Loading..." : error ? "Error" : formatNumber(analytics.activeCases)}
             </div>
           </CardContent>
@@ -142,31 +140,31 @@ const Dashboard = () => {
       </div>
 
       {/* Portfolio Aging Section */}
-      <Card className="border-none shadow-sm bg-white">
-        <CardHeader className="py-2 px-3">
-          <CardTitle className="text-sm">Portfolio Aging</CardTitle>
+      <Card className="border-none shadow-md bg-white">
+        <CardHeader>
+          <CardTitle>Portfolio Aging</CardTitle>
         </CardHeader>
-        <CardContent className="px-2">
-          <div className="h-[250px] w-full">
+        <CardContent>
+          <div className="h-[400px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart 
                 data={isLoadingAging ? [] : colorizedAgingData} 
-                margin={{ top: 5, right: 20, left: 30, bottom: 15 }}
+                margin={{ top: 10, right: 30, left: 40, bottom: 20 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis 
                   dataKey="bracket" 
-                  tick={{ fill: '#86888C', fontSize: 11 }}
+                  tick={{ fill: '#86888C' }}
                 />
                 <YAxis 
                   yAxisId="left"
-                  tick={{ fill: '#86888C', fontSize: 11 }}
+                  tick={{ fill: '#86888C' }}
                   tickFormatter={(value) => formatCurrency(value)}
                 />
                 <YAxis 
                   yAxisId="right"
                   orientation="right"
-                  tick={{ fill: '#86888C', fontSize: 11 }}
+                  tick={{ fill: '#86888C' }}
                   tickFormatter={(value) => formatNumber(value)}
                 />
                 <Tooltip 
@@ -174,17 +172,16 @@ const Dashboard = () => {
                     if (name === "value") return [formatCurrency(value), "Total Value"];
                     return [formatNumber(value), "Number of Cases"];
                   }}
-                  labelStyle={{ color: '#2A2B2E', fontSize: 11 }}
+                  labelStyle={{ color: '#2A2B2E' }}
                   contentStyle={{ 
                     backgroundColor: 'white',
                     border: '1px solid #e5e7eb',
-                    borderRadius: '0.375rem',
-                    fontSize: 11
+                    borderRadius: '0.375rem'
                   }}
                 />
                 <Bar 
                   dataKey="value" 
-                  radius={[3, 3, 0, 0]}
+                  radius={[4, 4, 0, 0]}
                   yAxisId="left"
                   name="value"
                 />
@@ -192,10 +189,10 @@ const Dashboard = () => {
                   type="monotone"
                   dataKey="count"
                   stroke={CHART_COLORS.line}
-                  strokeWidth={1.5}
+                  strokeWidth={2}
                   yAxisId="right"
                   name="count"
-                  dot={{ fill: CHART_COLORS.line, r: 3 }}
+                  dot={{ fill: CHART_COLORS.line }}
                 />
               </ComposedChart>
             </ResponsiveContainer>
