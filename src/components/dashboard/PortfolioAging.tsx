@@ -31,9 +31,9 @@ export const PortfolioAging = ({ isLoading, data }: PortfolioAgingProps) => {
   }));
 
   return (
-    <Card className="border-none bg-white">
+    <Card className="border-none bg-white w-full">
       <CardHeader>
-        <h2 className="text-xl font-semibold mb-4">Collection Age</h2>
+        <CardTitle>Collection Age</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-[300px] w-full">

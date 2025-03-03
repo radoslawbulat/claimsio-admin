@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -66,10 +67,18 @@ const Dashboard = () => {
         analytics={analytics}
       />
 
-      <PortfolioAging 
-        isLoading={isLoadingAging}
-        data={agingData || []}
-      />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <PortfolioAging 
+          isLoading={isLoadingAging}
+          data={agingData || []}
+        />
+        <div className="bg-white rounded-lg p-6">
+          <h2 className="text-xl font-semibold mb-4">Recovery Trends</h2>
+          <div className="flex items-center justify-center h-full">
+            <p className="text-muted-foreground">Coming soon</p>
+          </div>
+        </div>
+      </div>
 
       <div className="bg-white rounded-lg border border-input p-6">
         <h2 className="text-xl font-semibold mb-4">Latest Activity</h2>
