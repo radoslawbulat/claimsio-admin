@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bar, ComposedChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, Line } from "recharts";
 
@@ -8,8 +7,8 @@ interface PortfolioAgingProps {
 }
 
 const CHART_COLORS = {
-  bars: ['#F9A902', '#FF5900', '#CA061A', '#5E007D', '#001747'],
-  line: '#ef4444'
+  bars: ['#60A5FA', '#34D399', '#FBBF24', '#FB923C', '#F87171'],
+  line: '#2563EB'
 };
 
 const formatCurrency = (value: number) => {
@@ -37,26 +36,26 @@ export const PortfolioAging = ({ isLoading, data }: PortfolioAgingProps) => {
         <CardTitle>Portfolio Aging</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[400px] w-full">
+        <div className="h-[300px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart 
               data={isLoading ? [] : colorizedData} 
               margin={{ top: 10, right: 30, left: 40, bottom: 20 }}
             >
-              <CartesianGrid strokeDasharray="3 3" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
               <XAxis 
                 dataKey="bracket" 
-                tick={{ fill: '#86888C' }}
+                tick={{ fill: '#6B7280', fontSize: 12 }}
               />
               <YAxis 
                 yAxisId="left"
-                tick={{ fill: '#86888C' }}
+                tick={{ fill: '#6B7280', fontSize: 12 }}
                 tickFormatter={(value) => formatCurrency(value)}
               />
               <YAxis 
                 yAxisId="right"
                 orientation="right"
-                tick={{ fill: '#86888C' }}
+                tick={{ fill: '#6B7280', fontSize: 12 }}
                 tickFormatter={(value) => formatNumber(value)}
               />
               <Tooltip 
@@ -64,11 +63,12 @@ export const PortfolioAging = ({ isLoading, data }: PortfolioAgingProps) => {
                   if (name === "value") return [formatCurrency(value), "Total Value"];
                   return [formatNumber(value), "Number of Cases"];
                 }}
-                labelStyle={{ color: '#2A2B2E' }}
+                labelStyle={{ color: '#374151', fontWeight: 500 }}
                 contentStyle={{ 
                   backgroundColor: 'white',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '0.375rem'
+                  border: '1px solid #E5E7EB',
+                  borderRadius: '0.375rem',
+                  boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)'
                 }}
               />
               <Bar 
@@ -84,7 +84,7 @@ export const PortfolioAging = ({ isLoading, data }: PortfolioAgingProps) => {
                 strokeWidth={2}
                 yAxisId="right"
                 name="count"
-                dot={{ fill: CHART_COLORS.line }}
+                dot={{ fill: CHART_COLORS.line, r: 4 }}
               />
             </ComposedChart>
           </ResponsiveContainer>
