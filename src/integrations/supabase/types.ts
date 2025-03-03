@@ -295,7 +295,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_monthly_recoveries: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          month: string
+          recovered: number
+        }[]
+      }
     }
     Enums: {
       case_priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT"
