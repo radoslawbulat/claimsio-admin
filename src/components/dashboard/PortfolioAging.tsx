@@ -52,6 +52,11 @@ export const PortfolioAging = ({ isLoading, data }: PortfolioAgingProps) => {
                 tick={{ fill: '#6B7280', fontSize: 12 }}
                 tickFormatter={(value) => formatCurrency(value)}
               />
+              <YAxis 
+                yAxisId="right"
+                orientation="right"
+                tick={{ fill: 'transparent' }}
+              />
               <Tooltip 
                 formatter={(value: number, name: string) => {
                   if (name === "value") return [formatCurrency(value), "Total Value"];
@@ -76,7 +81,7 @@ export const PortfolioAging = ({ isLoading, data }: PortfolioAgingProps) => {
                 dataKey="count"
                 stroke={CHART_COLORS.line}
                 strokeWidth={2}
-                yAxisId="left"
+                yAxisId="right"
                 name="count"
                 dot={{ fill: CHART_COLORS.line, r: 4 }}
               />
