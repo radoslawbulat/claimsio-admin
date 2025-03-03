@@ -33,7 +33,7 @@ export const PortfolioAging = ({ isLoading, data }: PortfolioAgingProps) => {
   return (
     <Card className="border-none shadow-md bg-white">
       <CardHeader>
-        <CardTitle>Portfolio Aging</CardTitle>
+        <h2 className="text-xl font-semibold mb-4">Collection Age</h2>
       </CardHeader>
       <CardContent>
         <div className="h-[300px] w-full">
@@ -51,12 +51,6 @@ export const PortfolioAging = ({ isLoading, data }: PortfolioAgingProps) => {
                 yAxisId="left"
                 tick={{ fill: '#6B7280', fontSize: 12 }}
                 tickFormatter={(value) => formatCurrency(value)}
-              />
-              <YAxis 
-                yAxisId="right"
-                orientation="right"
-                tick={{ fill: '#6B7280', fontSize: 12 }}
-                tickFormatter={(value) => formatNumber(value)}
               />
               <Tooltip 
                 formatter={(value: number, name: string) => {
@@ -82,7 +76,7 @@ export const PortfolioAging = ({ isLoading, data }: PortfolioAgingProps) => {
                 dataKey="count"
                 stroke={CHART_COLORS.line}
                 strokeWidth={2}
-                yAxisId="right"
+                yAxisId="left"
                 name="count"
                 dot={{ fill: CHART_COLORS.line, r: 4 }}
               />
