@@ -45,6 +45,8 @@ serve(async (req) => {
       const dueDate = new Date(caseItem.due_date)
       const daysDiff = Math.floor((now.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24))
 
+      console.log(`Processing case with due date: ${caseItem.due_date}, days difference: ${daysDiff}, remaining debt: ${caseItem.debt_remaining}`)
+
       if (daysDiff <= 0) {
         agingBrackets['Not Due'].count++
         agingBrackets['Not Due'].value += caseItem.debt_remaining
@@ -95,3 +97,4 @@ serve(async (req) => {
     )
   }
 })
+
