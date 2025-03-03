@@ -78,14 +78,10 @@ const Dashboard = () => {
         analytics={analytics}
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         <PortfolioAging 
           isLoading={isLoadingAging}
           data={agingData || []}
-        />
-        <RecoveryTrends 
-          isLoading={isLoadingRecoveryTrends}
-          data={recoveryTrends || []}
         />
       </div>
 
