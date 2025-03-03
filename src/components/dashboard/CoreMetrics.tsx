@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface CoreMetricsProps {
@@ -28,7 +27,7 @@ const formatNumber = (value: number) => {
 export const CoreMetrics = ({ isLoading, error, analytics }: CoreMetricsProps) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <Card className="border-none shadow-md bg-white">
+      <Card className="border-none bg-white">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium text-secondary">
             In collection
@@ -41,7 +40,7 @@ export const CoreMetrics = ({ isLoading, error, analytics }: CoreMetricsProps) =
         </CardContent>
       </Card>
 
-      <Card className="border-none shadow-md bg-white">
+      <Card className="border-none bg-white">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium text-secondary">
             Recovered
@@ -54,7 +53,7 @@ export const CoreMetrics = ({ isLoading, error, analytics }: CoreMetricsProps) =
         </CardContent>
       </Card>
 
-      <Card className="border-none shadow-md bg-white">
+      <Card className="border-none bg-white">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium text-secondary">
             Recovery Rate
@@ -67,7 +66,7 @@ export const CoreMetrics = ({ isLoading, error, analytics }: CoreMetricsProps) =
         </CardContent>
       </Card>
 
-      <Card className="border-none shadow-md bg-white">
+      <Card className="border-none bg-white">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium text-secondary">
             Active Cases
