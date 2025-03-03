@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { CoreMetrics } from "@/components/dashboard/CoreMetrics";
 import { PortfolioAging } from "@/components/dashboard/PortfolioAging";
 import { CollectionsTable } from "@/components/dashboard/CollectionsTable";
+import { MonthlyRecoveryChart } from "@/components/dashboard/MonthlyRecoveryChart";
 import { RecoveryTrends } from "@/components/dashboard/RecoveryTrends";
 
 const fetchAnalytics = async () => {
@@ -28,6 +29,12 @@ const fetchRecoveryTrends = async () => {
   return data;
 };
 
+const fetchMonthlyRecoveries = async () => {
+  const { data, error } = await supabase.functions.invoke('get-monthly-recoveries');
+  if (error) throw error;
+  return data;
+};
+
 const Dashboard = () => {
   const [isAddDebtorOpen, setIsAddDebtorOpen] = useState(false);
 
@@ -44,6 +51,11 @@ const Dashboard = () => {
   const { data: recoveryTrends, isLoading: isLoadingRecoveryTrends } = useQuery({
     queryKey: ['recovery-trends'],
     queryFn: fetchRecoveryTrends
+  });
+
+  const { data: monthlyRecoveries, isLoading: isLoadingMonthlyRecoveries } = useQuery({
+    queryKey: ['monthly-recoveries'],
+    queryFn: fetchMonthlyRecoveries
   });
 
   return (
@@ -78,10 +90,14 @@ const Dashboard = () => {
         analytics={analytics}
       />
 
-      <div className="grid grid-cols-1 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <PortfolioAging 
           isLoading={isLoadingAging}
           data={agingData || []}
+        />
+        <MonthlyRecoveryChart 
+          isLoading={isLoadingMonthlyRecoveries}
+          data={monthlyRecoveries || []}
         />
       </div>
 
