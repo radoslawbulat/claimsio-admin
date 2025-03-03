@@ -5,17 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { format } from "date-fns";
 import { formatCurrency } from "@/lib/utils";
-
-async function fetchPayments() {
-  const { data, error } = await supabase
-    .from('payments')
-    .select('*, cases(case_number, creditor_name)')
-    .order('created_at', { ascending: false })
-    .limit(10);
-    
-  if (error) throw error;
-  return data;
-}
+import { Badge } from "@/components/ui/badge";
 
 const getStatusColor = (status: string) => {
   const colors = {
@@ -27,6 +17,17 @@ const getStatusColor = (status: string) => {
   };
   return colors[status as keyof typeof colors] || colors.pending;
 };
+
+async function fetchPayments() {
+  const { data, error } = await supabase
+    .from('payments')
+    .select('*, cases(case_number, creditor_name)')
+    .order('created_at', { ascending: false })
+    .limit(10);
+    
+  if (error) throw error;
+  return data;
+}
 
 export const PaymentsActivity = () => {
   const { data: payments, isLoading } = useQuery({
