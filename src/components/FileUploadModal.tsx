@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Upload } from "lucide-react";
@@ -56,8 +55,11 @@ const FileUploadModal = ({ isOpen, onClose }: FileUploadModalProps) => {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+    <Dialog open={isOpen} onOpenChange={onClose} modal={true}>
+      <DialogContent className="sm:max-w-md" onInteractOutside={(e) => {
+        e.preventDefault();
+        onClose();
+      }}>
         <DialogHeader>
           <DialogTitle>Upload CSV File</DialogTitle>
         </DialogHeader>
