@@ -1,7 +1,7 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Shield, PlusCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -28,10 +28,16 @@ const fetchDisputes = async () => {
 };
 
 const Disputes = () => {
+  const navigate = useNavigate();
   const { data: disputes, isLoading } = useQuery({
     queryKey: ['disputes'],
     queryFn: fetchDisputes
   });
+
+  const handleRowClick = (e: React.MouseEvent, caseId: string) => {
+    e.preventDefault();
+    navigate(`/case/${caseId}`);
+  };
 
   return (
     <div className="space-y-8 animate-fade-in p-6">
@@ -73,7 +79,11 @@ const Disputes = () => {
               </TableRow>
             ) : (
               disputes?.map((dispute) => (
-                <TableRow key={dispute.id}>
+                <TableRow 
+                  key={dispute.id}
+                  onClick={(e) => handleRowClick(e, dispute.id)}
+                  className="cursor-pointer hover:bg-muted"
+                >
                   <TableCell>{dispute.case_number}</TableCell>
                   <TableCell>
                     {dispute.debtor ? 
