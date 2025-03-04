@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Payment } from "@/types/payment";
 
 export const fetchPayments = async () => {
+  console.log('Fetching payments...');
   const { data, error } = await supabase
     .from('payments')
     .select(`
@@ -22,6 +23,7 @@ export const fetchPayments = async () => {
     throw error;
   }
 
+  console.log('Fetched payments:', data);
   return data as (Payment & {
     cases: {
       case_number: string;

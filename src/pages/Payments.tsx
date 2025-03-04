@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
@@ -51,11 +52,60 @@ const Payments = () => {
   });
 
   if (isLoading) {
-    return <div className="p-6">Loading...</div>;
+    return (
+      <div className="p-6">
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <CreditCard className="h-6 w-6" />
+              <CardTitle>Payments</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-4">Loading payments...</div>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="p-6">Error loading payments</div>;
+    console.error('Error in payments component:', error);
+    return (
+      <div className="p-6">
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <CreditCard className="h-6 w-6" />
+              <CardTitle>Payments</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-4 text-red-600">
+              Error loading payments: {error.message}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!payments || payments.length === 0) {
+    return (
+      <div className="p-6">
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <CreditCard className="h-6 w-6" />
+              <CardTitle>Payments</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-4">No payments found</div>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   return (
