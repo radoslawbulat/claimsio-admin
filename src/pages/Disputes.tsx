@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Shield, PlusCircle } from "lucide-react";
@@ -11,7 +12,6 @@ import {
 } from "@/components/ui/table";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Badge } from "@/components/ui/badge";
 
 const fetchDisputes = async () => {
   const { data, error } = await supabase
@@ -33,12 +33,9 @@ const Disputes = () => {
   return (
     <div className="space-y-8 animate-fade-in p-6">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Shield className="h-6 w-6 text-primary" />
-            <h1 className="text-2xl font-semibold text-gray-900">Disputes</h1>
-          </div>
-          <Badge variant="secondary">Active</Badge>
+        <div className="flex items-center gap-2">
+          <Shield className="h-6 w-6 text-primary" />
+          <h1 className="text-2xl font-semibold text-gray-900">Disputes</h1>
         </div>
         <Button className="gap-2">
           <PlusCircle size={20} />
