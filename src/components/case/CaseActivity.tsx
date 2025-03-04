@@ -43,7 +43,7 @@ export const CaseActivity = ({ communications }: CaseActivityProps) => {
               onClick={() => setIsAddMessageOpen(true)}
             >
               <MessageSquarePlus className="h-4 w-4" />
-              Add Message
+              Add
             </Button>
             <Select value={typeFilter} onValueChange={(value: any) => setTypeFilter(value)}>
               <SelectTrigger className="w-[140px]">

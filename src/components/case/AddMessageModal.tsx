@@ -70,7 +70,7 @@ export const AddMessageModal = ({ isOpen, onClose }: AddMessageModalProps) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Add Message</DialogTitle>
+          <DialogTitle>Add</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <Select value={type} onValueChange={(value: "call" | "email" | "sms") => setType(value)}>
