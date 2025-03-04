@@ -13,6 +13,7 @@ import Collections from "./pages/Collections";
 import CaseDetails from "./pages/CaseDetails";
 import Disputes from "./pages/Disputes";
 import Payments from "./pages/Payments";
+import Settings from "./pages/Settings";
 
 const queryClient = new QueryClient();
 
@@ -86,6 +87,16 @@ const App = () => (
               <ProtectedRoute>
                 <AppLayout>
                   <Payments />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <Settings />
                 </AppLayout>
               </ProtectedRoute>
             }
