@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ComposedChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Line } from 'recharts';
 import { Skeleton } from "@/components/ui/skeleton";
@@ -77,16 +76,24 @@ export const MonthlyRecoveryChart = ({ isLoading, data }: MonthlyRecoveryChartPr
                 tickFormatter={(value) => formatNumber(value)}
               />
               <Tooltip 
-                formatter={(value: number, name: string) => {
-                  if (name === "value") return [formatCurrency(value), "Total Value"];
-                  return [formatNumber(value), "Number of Cases"];
-                }}
-                labelStyle={{ color: '#374151', fontWeight: 500 }}
-                contentStyle={{ 
-                  backgroundColor: 'white',
-                  border: '1px solid #E5E7EB',
-                  borderRadius: '0.375rem',
-                  boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)'
+                content={({ active, payload, label }) => {
+                  if (active && payload && payload.length) {
+                    const value = payload.find(p => p.name === "value")?.value as number;
+                    const recovered = payload.find(p => p.name === "recovered")?.value as number;
+                    
+                    return (
+                      <div className="bg-white p-4 border border-gray-200 rounded-lg shadow-sm">
+                        <p className="text-gray-900 font-medium mb-1">{label}</p>
+                        <p className="text-gray-700">
+                          Total Recovery Amount: <span className="font-semibold">{formatCurrency(value)}</span>
+                        </p>
+                        <p className="text-gray-700">
+                          Number of Cases: <span className="font-semibold">{formatNumber(recovered)}</span>
+                        </p>
+                      </div>
+                    );
+                  }
+                  return null;
                 }}
               />
               <Bar 
