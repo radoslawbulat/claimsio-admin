@@ -12,7 +12,7 @@ import {
 import {
   LayoutDashboard,
   Folder,
-  AlertCircle,
+  Shield,
   CreditCard,
   Settings,
   LogOut,
@@ -23,7 +23,7 @@ import { useToast } from "@/components/ui/use-toast";
 const menuItems = [
   { title: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
   { title: "Collections", icon: Folder, path: "/collections" },
-  { title: "Disputes", icon: AlertCircle, path: "/disputes" },
+  { title: "Disputes", icon: Shield, path: "/disputes" },
   { title: "Payments", icon: CreditCard, path: "/payments" },
 ];
 
