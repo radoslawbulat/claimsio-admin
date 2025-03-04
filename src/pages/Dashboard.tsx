@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -67,13 +68,12 @@ const Dashboard = () => {
           <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
         </div>
         <div className="flex items-center gap-4">
-          <Select defaultValue="all">
+          <Select defaultValue="demo">
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select portfolio" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Portfolios</SelectItem>
-              <SelectItem value="npl">NPL</SelectItem>
+              <SelectItem value="demo">Demo</SelectItem>
             </SelectContent>
           </Select>
           <div className="flex gap-2">
