@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,6 @@ import { PortfolioAging } from "@/components/dashboard/PortfolioAging";
 import { CollectionsTable } from "@/components/dashboard/CollectionsTable";
 import { MonthlyRecoveryChart } from "@/components/dashboard/MonthlyRecoveryChart";
 import { RecoveryTrends } from "@/components/dashboard/RecoveryTrends";
-import { Badge } from "@/components/ui/badge";
 
 const fetchAnalytics = async () => {
   const { data, error } = await supabase.functions.invoke('get-analytics');
@@ -64,9 +64,8 @@ const Dashboard = () => {
   return (
     <div className="space-y-8 animate-fade-in p-6">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+        <div>
           <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
-          <Badge variant="secondary">Overview</Badge>
         </div>
         <div className="flex items-center gap-4">
           <Select defaultValue="demo">
