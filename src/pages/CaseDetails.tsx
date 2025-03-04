@@ -73,6 +73,8 @@ const CaseDetails = () => {
         <CaseWarningBanner 
           message="Attention needed: This case has been flagged for human review"
           disputeReason={caseDetails.dispute_reason}
+          caseId={caseDetails.id}
+          currentStatus={caseDetails.status}
         />
       )}
 
