@@ -1,8 +1,7 @@
-
 import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, FileUp } from "lucide-react";
+import { PlusCircle, FileUp, LayoutDashboard } from "lucide-react";
 import AddDebtorModal from "@/components/AddDebtorModal";
 import FileUploadModal from "@/components/FileUploadModal";
 import { supabase } from "@/integrations/supabase/client";
@@ -64,7 +63,8 @@ const Dashboard = () => {
   return (
     <div className="space-y-8 animate-fade-in p-6">
       <div className="flex items-center justify-between">
-        <div>
+        <div className="flex items-center gap-2">
+          <LayoutDashboard className="h-6 w-6" />
           <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
         </div>
         <div className="flex items-center gap-4">

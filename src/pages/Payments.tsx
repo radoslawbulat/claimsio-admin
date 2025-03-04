@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
@@ -19,6 +18,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Link } from 'react-router-dom';
 import { fetchPayments } from '@/utils/payment-queries';
+import { CreditCard } from "lucide-react";
 
 const getStatusColor = (status: string) => {
   switch (status.toLowerCase()) {
@@ -62,7 +62,10 @@ const Payments = () => {
     <div className="p-6 space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Payments</CardTitle>
+          <div className="flex items-center gap-2">
+            <CreditCard className="h-6 w-6" />
+            <CardTitle>Payments</CardTitle>
+          </div>
         </CardHeader>
         <CardContent>
           <Table>
