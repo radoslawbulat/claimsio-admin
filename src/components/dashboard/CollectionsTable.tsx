@@ -14,6 +14,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import type { CaseWithDebtor } from '@/types/case';
+import { getStatusColor } from '@/utils/case-colors';
 
 const getStatusStyle = (status: CaseWithDebtor['status']) => {
   switch (status) {
@@ -230,7 +231,8 @@ export const CollectionsTable = () => {
                 </TableCell>
                 <TableCell>
                   <Badge 
-                    {...getStatusStyle(caseItem.status)}
+                    variant="default"
+                    className={getStatusColor(caseItem.status)}
                   >
                     {caseItem.status.toLowerCase()}
                   </Badge>

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
@@ -22,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
+import { getStatusColor } from '@/utils/case-colors';
 
 type CaseWithDebtor = {
   id: string;
@@ -73,17 +73,6 @@ const fetchCasesWithDebtors = async (status: CaseWithDebtor['status'] | 'ALL' | 
   }));
 
   return transformedData as CaseWithDebtor[];
-};
-
-const getStatusStyle = (status: CaseWithDebtor['status']) => {
-  switch (status) {
-    case 'ACTIVE':
-      return { variant: 'default' as const, className: 'bg-blue-500 hover:bg-blue-500' };
-    case 'CLOSED':
-      return { variant: 'secondary' as const, className: 'bg-gray-500 hover:bg-gray-500' };
-    case 'SUSPENDED':
-      return { variant: 'destructive' as const, className: 'bg-orange-400 hover:bg-orange-400' };
-  }
 };
 
 type SortConfig = {
@@ -259,7 +248,8 @@ const Collections = () => {
                   </TableCell>
                   <TableCell>
                     <Badge 
-                      {...getStatusStyle(caseItem.status)}
+                      variant="default"
+                      className={getStatusColor(caseItem.status)}
                     >
                       {caseItem.status.toLowerCase()}
                     </Badge>
