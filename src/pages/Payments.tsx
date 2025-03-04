@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Search, CreditCard } from "lucide-react";
 import {
   Table,
@@ -49,6 +49,7 @@ const formatCurrency = (amount: number, currency: string) => {
 const Payments = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<string>('ALL');
+  const navigate = useNavigate();
 
   const { data: payments, isLoading, error } = useQuery({
     queryKey: ['payments'],
@@ -156,7 +157,11 @@ const Payments = () => {
           <TableBody>
             {filteredPayments && filteredPayments.length > 0 ? (
               filteredPayments.map((payment) => (
-                <TableRow key={payment.id}>
+                <TableRow 
+                  key={payment.id}
+                  onClick={() => navigate(`/case/${payment.case_id}`, { state: { from: 'payments' } })}
+                  className="cursor-pointer hover:bg-muted"
+                >
                   <TableCell>
                     {format(new Date(payment.created_at), 'MMM d, yyyy')}
                   </TableCell>
