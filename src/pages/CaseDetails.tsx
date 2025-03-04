@@ -2,7 +2,7 @@ import React from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, User, Clock, Shield } from "lucide-react";
+import { ArrowLeft, User, Clock, Shield, Hash } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CaseInformation } from "@/components/case/CaseInformation";
 import { DebtorInformation } from "@/components/case/DebtorInformation";
