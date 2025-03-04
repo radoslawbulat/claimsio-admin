@@ -83,6 +83,23 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
     setSelectedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
 
+  const handleClose = () => {
+    // Clean up state before closing
+    setFormData({
+      fullName: "",
+      nationality: "",
+      email: "",
+      phone: "",
+      currency: "PLN",
+      amount: "",
+      description: "",
+    });
+    setSelectedFiles([]);
+    setDateString("");
+    setLoading(false);
+    onClose();
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -188,30 +205,22 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
       }
 
       toast.success("Debtor added successfully");
-      setFormData({
-        fullName: "",
-        nationality: "",
-        email: "",
-        phone: "",
-        currency: "PLN",
-        amount: "",
-        description: "",
-      });
-      setSelectedFiles([]);
-      setDateString("");
-      onClose();
+      handleClose();
       
     } catch (error) {
       console.error("Error adding debtor:", error);
       toast.error("Failed to add debtor");
-    } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent className="w-full h-full overflow-y-auto sm:max-w-[540px] p-0" onPointerDownOutside={onClose} onEscapeKeyDown={onClose}>
+    <Sheet open={isOpen} onOpenChange={handleClose}>
+      <SheetContent 
+        className="w-full h-full overflow-y-auto sm:max-w-[540px] p-0"
+        onPointerDownOutside={handleClose}
+        onEscapeKeyDown={handleClose}
+      >
         <div className="p-6 h-full">
           <SheetHeader>
             <SheetTitle>Add a New Debtor</SheetTitle>
@@ -390,7 +399,7 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
             </div>
 
             <div className="flex justify-end gap-4 pt-4 pb-12">
-              <Button type="button" variant="outline" onClick={onClose} disabled={loading}>
+              <Button type="button" variant="outline" onClick={handleClose} disabled={loading}>
                 Cancel
               </Button>
               <Button type="submit" disabled={loading}>
