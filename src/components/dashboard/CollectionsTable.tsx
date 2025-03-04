@@ -32,25 +32,14 @@ type SortConfig = {
 };
 
 const fetchCasesWithDebtors = async (sortConfig: SortConfig) => {
-  console.log('Fetching cases with sort config:', sortConfig);
+  console.log('Fetching all cases...');
 
-  // First, get cases joined with debtors
   const { data: casesData, error: casesError } = await supabase
     .from('cases')
     .select(`
-      id,
-      case_number,
-      debt_remaining,
-      status,
-      due_date,
-      currency,
-      debtor:debtors(first_name, last_name)
-    `)
-    .limit(5)
-    .order(sortConfig.column || 'created_at', { 
-      ascending: sortConfig.direction === 'asc',
-      nullsFirst: false 
-    });
+      *,
+      debtor:debtors(*)
+    `);
 
   if (casesError) {
     console.error('Error fetching cases:', casesError);
@@ -75,40 +64,56 @@ const fetchCasesWithDebtors = async (sortConfig: SortConfig) => {
         .limit(1)
         .single();
 
-      if (commsError && commsError.code !== 'PGRST116') { // Ignore "No rows returned" error
+      if (commsError && commsError.code !== 'PGRST116') {
         console.error('Error fetching communications:', commsError);
       }
 
       return {
-        ...caseItem,
+        id: caseItem.id,
+        case_number: caseItem.case_number,
+        debt_remaining: caseItem.debt_remaining,
+        status: caseItem.status,
+        due_date: caseItem.due_date,
+        currency: caseItem.currency,
+        debtor: caseItem.debtor ? {
+          first_name: caseItem.debtor.first_name,
+          last_name: caseItem.debtor.last_name
+        } : null,
         latest_comm: commsData ? { created_at: commsData.created_at } : null
       };
     })
   );
 
-  // Sort by complex fields if needed
-  if (sortConfig.column === 'debtor' || sortConfig.column === 'latest_comm') {
+  // Apply sorting if needed
+  if (sortConfig.column) {
     casesWithComms.sort((a, b) => {
       const direction = sortConfig.direction === 'asc' ? 1 : -1;
 
-      if (sortConfig.column === 'debtor') {
-        const aName = a.debtor ? `${a.debtor.first_name} ${a.debtor.last_name}` : '';
-        const bName = b.debtor ? `${b.debtor.first_name} ${b.debtor.last_name}` : '';
-        return aName.localeCompare(bName) * direction;
+      switch (sortConfig.column) {
+        case 'case_number':
+          return a.case_number.localeCompare(b.case_number) * direction;
+        case 'debtor':
+          const aName = a.debtor ? `${a.debtor.first_name} ${a.debtor.last_name}` : '';
+          const bName = b.debtor ? `${b.debtor.first_name} ${b.debtor.last_name}` : '';
+          return aName.localeCompare(bName) * direction;
+        case 'debt_remaining':
+          return (a.debt_remaining - b.debt_remaining) * direction;
+        case 'status':
+          return a.status.localeCompare(b.status) * direction;
+        case 'due_date':
+          return (new Date(a.due_date).getTime() - new Date(b.due_date).getTime()) * direction;
+        case 'latest_comm':
+          const aTime = a.latest_comm ? new Date(a.latest_comm.created_at).getTime() : 0;
+          const bTime = b.latest_comm ? new Date(b.latest_comm.created_at).getTime() : 0;
+          return (aTime - bTime) * direction;
+        default:
+          return 0;
       }
-
-      if (sortConfig.column === 'latest_comm') {
-        const aTime = a.latest_comm ? new Date(a.latest_comm.created_at).getTime() : 0;
-        const bTime = b.latest_comm ? new Date(b.latest_comm.created_at).getTime() : 0;
-        return (aTime - bTime) * direction;
-      }
-
-      return 0;
     });
   }
 
   console.log('Final data:', casesWithComms);
-  return casesWithComms as CaseWithDebtor[];
+  return casesWithComms;
 };
 
 export const CollectionsTable = () => {
