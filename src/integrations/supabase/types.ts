@@ -58,6 +58,9 @@ export type Database = {
           debt_date: string | null
           debt_remaining: number
           debtor_id: string | null
+          dispute_reason:
+            | Database["public"]["Enums"]["case_dispute_type"]
+            | null
           due_date: string
           id: string
           payment_link_amount: number | null
@@ -76,6 +79,9 @@ export type Database = {
           debt_date?: string | null
           debt_remaining: number
           debtor_id?: string | null
+          dispute_reason?:
+            | Database["public"]["Enums"]["case_dispute_type"]
+            | null
           due_date: string
           id?: string
           payment_link_amount?: number | null
@@ -94,6 +100,9 @@ export type Database = {
           debt_date?: string | null
           debt_remaining?: number
           debtor_id?: string | null
+          dispute_reason?:
+            | Database["public"]["Enums"]["case_dispute_type"]
+            | null
           due_date?: string
           id?: string
           payment_link_amount?: number | null
@@ -305,6 +314,14 @@ export type Database = {
       }
     }
     Enums: {
+      case_dispute_type:
+        | "Amount"
+        | "Identity"
+        | "Service"
+        | "Payment"
+        | "Legal"
+        | "Documentation"
+        | "Communication"
       case_priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT"
       case_status: "ACTIVE" | "CLOSED" | "SUSPENDED" | "CANCELLED"
       comms_direction: "inbound" | "outbound"

@@ -71,7 +71,8 @@ const CaseDetails = () => {
 
       {caseDetails.status === "SUSPENDED" && (
         <CaseWarningBanner 
-          message="Attention needed: This dispute has been flagged for human review due to Fraud Claim, Legal Threat Detected, Regulatory Risk"
+          message="Attention needed: This case has been flagged for human review"
+          disputeReason={caseDetails.dispute_reason}
         />
       )}
 
