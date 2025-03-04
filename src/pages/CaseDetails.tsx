@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -67,7 +68,7 @@ const CaseDetails = () => {
         <Button variant="ghost" asChild>
           <Link to={getBackRoute()} className="flex items-center gap-2">
             <ArrowLeft size={16} />
-            Back to {fromRoute === 'disputes' ? 'Disputes' : 'Collections'}
+            Back to {fromRoute === 'disputes' ? 'Disputes' : fromRoute === 'payments' ? 'Payments' : 'Collections'}
           </Link>
         </Button>
         <ChangeStatusButton 
