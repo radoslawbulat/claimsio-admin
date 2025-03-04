@@ -1,9 +1,8 @@
-
 import { format } from 'date-fns';
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MessageCircle, PhoneCall, Mail, Bot, User } from "lucide-react";
-import { getCommsStatusColor } from "@/utils/case-colors";
+import { Bot, User } from "lucide-react";
+import { getCommsStatusColor, getCommsTypeColor } from "@/utils/case-colors";
 import { Communication } from "@/types/case";
 import { useState } from 'react';
 import {
@@ -13,19 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-const getCommsIcon = (type: Communication['comms_type']) => {
-  switch (type) {
-    case 'call':
-      return <PhoneCall className="h-4 w-4" />;
-    case 'email':
-      return <Mail className="h-4 w-4" />;
-    case 'sms':
-      return <MessageCircle className="h-4 w-4" />;
-    default:
-      return <MessageCircle className="h-4 w-4" />;
-  }
-};
 
 interface CaseActivityProps {
   communications: Communication[];
@@ -100,13 +86,9 @@ export const CaseActivity = ({ communications }: CaseActivityProps) => {
                       <span className="font-medium">
                         {comm.direction === 'inbound' ? 'Customer' : 'System'}
                       </span>
-                      <div className={`flex items-center gap-1 text-sm text-muted-foreground ${
-                        comm.direction === 'outbound' ? 'flex-row-reverse' : ''
-                      }`}>
-                        <span>via</span>
-                        {getCommsIcon(comm.comms_type)}
-                        <span className="capitalize">{comm.comms_type}</span>
-                      </div>
+                      <Badge className={getCommsTypeColor(comm.comms_type)}>
+                        {comm.comms_type}
+                      </Badge>
                       <Badge className={getCommsStatusColor(comm.status)}>
                         {comm.status}
                       </Badge>
