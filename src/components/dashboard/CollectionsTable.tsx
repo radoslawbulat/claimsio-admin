@@ -101,7 +101,10 @@ const fetchCasesWithDebtors = async (sortConfig: SortConfig) => {
 
 export const CollectionsTable = () => {
   const navigate = useNavigate();
-  const [sortConfig, setSortConfig] = useState<SortConfig>({ column: null, direction: 'asc' });
+  const [sortConfig, setSortConfig] = useState<SortConfig>({ 
+    column: 'latest_comm', // Set default sort column
+    direction: 'desc'      // Set default sort direction
+  });
   
   const { data: cases, isLoading } = useQuery({
     queryKey: ['dashboard-cases', sortConfig],
