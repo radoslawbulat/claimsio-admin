@@ -26,7 +26,12 @@ export const CaseWarningBanner = ({ message, disputeReason, caseId, currentStatu
           )}
         </div>
       </div>
-      <ChangeStatusButton caseId={caseId} currentStatus={currentStatus} />
+      <ChangeStatusButton 
+        caseId={caseId} 
+        currentStatus={currentStatus}
+      >
+        Resolve
+      </ChangeStatusButton>
     </div>
   );
 };

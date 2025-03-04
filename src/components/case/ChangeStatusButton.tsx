@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -24,7 +23,7 @@ interface ChangeStatusButtonProps {
   currentStatus: "ACTIVE" | "CLOSED" | "SUSPENDED" | "CANCELLED";
 }
 
-export function ChangeStatusButton({ caseId, currentStatus }: ChangeStatusButtonProps) {
+export function ChangeStatusButton({ caseId, currentStatus, children = "Change Status" }: ChangeStatusButtonProps & { children?: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [status, setStatus] = useState<typeof currentStatus>(currentStatus);
   const queryClient = useQueryClient();
@@ -60,7 +59,7 @@ export function ChangeStatusButton({ caseId, currentStatus }: ChangeStatusButton
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">Change Status</Button>
+        <Button variant="outline">{children}</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
