@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
@@ -33,7 +32,7 @@ type SortConfig = {
 };
 
 const fetchCasesWithDebtors = async (sortConfig: SortConfig) => {
-  console.log('Fetching cases with sort config:', sortConfig);
+  console.log('Starting to fetch cases with sort config:', sortConfig);
   
   let query = supabase
     .from('cases')
@@ -70,23 +69,31 @@ const fetchCasesWithDebtors = async (sortConfig: SortConfig) => {
     throw error;
   }
 
-  console.log('Raw cases data:', data);
+  console.log('Raw response:', { data, error });
 
   if (!data) {
     console.log('No data returned from query');
     return [];
   }
 
-  const transformedData = data.map(item => ({
-    ...item,
-    latest_comm: item.latest_comm && item.latest_comm.length > 0
-      ? { created_at: item.latest_comm.sort((a: { created_at: string }, b: { created_at: string }) => 
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        )[0].created_at }
-      : null
-  }));
+  if (data.length === 0) {
+    console.log('Query returned empty array');
+    return [];
+  }
 
-  console.log('Transformed data:', transformedData);
+  const transformedData = data.map(item => {
+    console.log('Processing item:', item);
+    return {
+      ...item,
+      latest_comm: item.latest_comm && item.latest_comm.length > 0
+        ? { created_at: item.latest_comm.sort((a: { created_at: string }, b: { created_at: string }) => 
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          )[0].created_at }
+        : null
+    };
+  });
+
+  console.log('Final transformed data:', transformedData);
 
   let sortedData = [...transformedData];
 
@@ -117,10 +124,12 @@ export const CollectionsTable = () => {
   const navigate = useNavigate();
   const [sortConfig, setSortConfig] = useState<SortConfig>({ column: null, direction: 'asc' });
   
-  const { data: cases, isLoading } = useQuery({
+  const { data: cases, isLoading, error } = useQuery({
     queryKey: ['dashboard-cases', sortConfig],
     queryFn: () => fetchCasesWithDebtors(sortConfig),
   });
+
+  console.log('Query result:', { cases, isLoading, error });
 
   const handleSort = (column: SortConfig['column']) => {
     // Prevent default behavior which might cause scrolling
