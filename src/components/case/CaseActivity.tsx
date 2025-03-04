@@ -1,7 +1,8 @@
+
 import { format } from 'date-fns';
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MessageCircle, PhoneCall, Mail, ArrowLeftFromLine, ArrowRightFromLine } from "lucide-react";
+import { MessageCircle, PhoneCall, Mail, ArrowLeftFromLine, ArrowRightFromLine, Bot, User } from "lucide-react";
 import { getCommsStatusColor } from "@/utils/case-colors";
 import { Communication } from "@/types/case";
 import { useState } from 'react';
@@ -44,7 +45,7 @@ export const CaseActivity = ({ communications }: CaseActivityProps) => {
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>Activity</CardTitle>
+          <CardTitle>Communication History</CardTitle>
           <div className="flex gap-4">
             <Select value={typeFilter} onValueChange={(value: any) => setTypeFilter(value)}>
               <SelectTrigger className="w-[140px]">
@@ -63,18 +64,8 @@ export const CaseActivity = ({ communications }: CaseActivityProps) => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Directions</SelectItem>
-                <SelectItem value="inbound">
-                  <div className="flex items-center gap-2">
-                    <ArrowLeftFromLine className="h-3 w-3" />
-                    Inbound
-                  </div>
-                </SelectItem>
-                <SelectItem value="outbound">
-                  <div className="flex items-center gap-2">
-                    <ArrowRightFromLine className="h-3 w-3" />
-                    Outbound
-                  </div>
-                </SelectItem>
+                <SelectItem value="inbound">Inbound</SelectItem>
+                <SelectItem value="outbound">Outbound</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -84,32 +75,42 @@ export const CaseActivity = ({ communications }: CaseActivityProps) => {
         {filteredComms && filteredComms.length > 0 ? (
           <div className="space-y-4">
             {filteredComms.map((comm) => (
-              <div key={comm.id} className="flex items-start gap-4 p-4 border rounded-lg">
-                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-accent">
-                  {getCommsIcon(comm.comms_type)}
+              <div 
+                key={comm.id} 
+                className={`flex items-start gap-4 p-4 rounded-lg ${
+                  comm.direction === 'inbound' ? 'bg-blue-50' : 'bg-gray-50'
+                }`}
+              >
+                <div className={`flex items-center justify-center w-10 h-10 rounded-full ${
+                  comm.direction === 'inbound' ? 'bg-blue-100' : 'bg-gray-200'
+                }`}>
+                  {comm.direction === 'inbound' ? (
+                    <User className="h-5 w-5 text-blue-600" />
+                  ) : (
+                    <Bot className="h-5 w-5 text-gray-600" />
+                  )}
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium capitalize">{comm.comms_type}</span>
+                      <span className="font-medium">
+                        {comm.direction === 'inbound' ? 'Customer' : 'System'}
+                      </span>
+                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                        <span>via</span>
+                        {getCommsIcon(comm.comms_type)}
+                        <span className="capitalize">{comm.comms_type}</span>
+                      </div>
                       <Badge className={getCommsStatusColor(comm.status)}>
                         {comm.status}
                       </Badge>
-                      <Badge variant="outline" className="flex items-center gap-1">
-                        {comm.direction === 'inbound' ? (
-                          <ArrowLeftFromLine className="h-3 w-3" />
-                        ) : (
-                          <ArrowRightFromLine className="h-3 w-3" />
-                        )}
-                        {comm.direction}
-                      </Badge>
                     </div>
                     <span className="text-sm text-muted-foreground">
-                      {format(new Date(comm.created_at), 'PPpp')}
+                      {format(new Date(comm.created_at), 'MMM d, yyyy • h:mm a')}
                     </span>
                   </div>
                   {comm.content && (
-                    <p className="text-sm text-muted-foreground">{comm.content}</p>
+                    <p className="text-sm">{comm.content}</p>
                   )}
                 </div>
               </div>
