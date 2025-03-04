@@ -1,13 +1,8 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Link } from 'react-router-dom';
+import { Search, CreditCard } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -17,9 +12,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Link } from 'react-router-dom';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { fetchPayments } from '@/utils/payment-queries';
-import { CreditCard } from "lucide-react";
 
 const getStatusColor = (status: string) => {
   switch (status.toLowerCase()) {
@@ -46,25 +47,34 @@ const formatCurrency = (amount: number, currency: string) => {
 };
 
 const Payments = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState<string>('ALL');
+
   const { data: payments, isLoading, error } = useQuery({
     queryKey: ['payments'],
     queryFn: fetchPayments,
   });
 
+  const filteredPayments = payments?.filter(payment => {
+    const searchLower = searchQuery.toLowerCase();
+    const matchesSearch = 
+      payment.cases?.case_number.toLowerCase().includes(searchLower) ||
+      (payment.cases?.debtor && 
+        (`${payment.cases.debtor.first_name} ${payment.cases.debtor.last_name}`).toLowerCase().includes(searchLower));
+    
+    const matchesStatus = selectedStatus === 'ALL' || payment.status.toLowerCase() === selectedStatus.toLowerCase();
+    
+    return (searchQuery === '' || matchesSearch) && matchesStatus;
+  });
+
   if (isLoading) {
     return (
       <div className="p-6">
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <CreditCard className="h-6 w-6" />
-              <CardTitle>Payments</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-4">Loading payments...</div>
-          </CardContent>
-        </Card>
+        <div className="flex items-center gap-2 mb-6">
+          <CreditCard className="h-6 w-6" />
+          <h1 className="text-2xl font-bold">Payments</h1>
+        </div>
+        <div className="text-center py-4">Loading payments...</div>
       </div>
     );
   }
@@ -73,19 +83,13 @@ const Payments = () => {
     console.error('Error in payments component:', error);
     return (
       <div className="p-6">
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <CreditCard className="h-6 w-6" />
-              <CardTitle>Payments</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-4 text-red-600">
-              Error loading payments: {error.message}
-            </div>
-          </CardContent>
-        </Card>
+        <div className="flex items-center gap-2 mb-6">
+          <CreditCard className="h-6 w-6" />
+          <h1 className="text-2xl font-bold">Payments</h1>
+        </div>
+        <div className="text-center py-4 text-red-600">
+          Error loading payments: {error.message}
+        </div>
       </div>
     );
   }
@@ -93,44 +97,65 @@ const Payments = () => {
   if (!payments || payments.length === 0) {
     return (
       <div className="p-6">
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <CreditCard className="h-6 w-6" />
-              <CardTitle>Payments</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-4">No payments found</div>
-          </CardContent>
-        </Card>
+        <div className="flex items-center gap-2 mb-6">
+          <CreditCard className="h-6 w-6" />
+          <h1 className="text-2xl font-bold">Payments</h1>
+        </div>
+        <div className="text-center py-4">No payments found</div>
       </div>
     );
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <CreditCard className="h-6 w-6" />
-            <CardTitle>Payments</CardTitle>
+    <div className="p-6">
+      <div className="flex flex-col gap-4 mb-6">
+        <div className="flex items-center gap-2">
+          <CreditCard className="h-6 w-6" />
+          <h1 className="text-2xl font-bold">Payments</h1>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+          <div className="relative w-full sm:w-[300px]">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+            <Input
+              placeholder="Search by case ID or debtor name..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
           </div>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Case</TableHead>
-                <TableHead>Debtor</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Payment Method</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {payments.map((payment) => (
+          <Select
+            value={selectedStatus}
+            onValueChange={setSelectedStatus}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">All statuses</SelectItem>
+              <SelectItem value="completed">Completed</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="failed">Failed</SelectItem>
+              <SelectItem value="refunded">Refunded</SelectItem>
+              <SelectItem value="cancelled">Cancelled</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <div className="rounded-lg border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Date</TableHead>
+              <TableHead>Amount</TableHead>
+              <TableHead>Case</TableHead>
+              <TableHead>Debtor</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Payment Method</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredPayments && filteredPayments.length > 0 ? (
+              filteredPayments.map((payment) => (
                 <TableRow key={payment.id}>
                   <TableCell>
                     {format(new Date(payment.created_at), 'MMM d, yyyy')}
@@ -167,11 +192,17 @@ const Payments = () => {
                     {payment.payment_method || 'N/A'}
                   </TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-4">
+                  No payments found
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 };
