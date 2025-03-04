@@ -16,7 +16,7 @@ export const CaseWarningBanner = ({ message, disputeReason }: CaseWarningBannerP
         <p className="text-base">{message}</p>
         {disputeReason && (
           <p className="text-sm mt-1">
-            Disputed reason: <span className="font-bold">{formattedReason}</span>
+            Disputed reason: <span className="font-bold">{formattedReason} issue</span>
           </p>
         )}
       </div>
