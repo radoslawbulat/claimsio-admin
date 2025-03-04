@@ -13,6 +13,7 @@ import { format } from 'date-fns';
 import { Badge } from "@/components/ui/badge";
 import { getStatusColor } from "@/utils/case-colors";
 import { ChangeStatusButton } from "@/components/case/ChangeStatusButton";
+import { CaseWarningBanner } from "@/components/case/CaseWarningBanner";
 
 const CaseDetails = () => {
   const { id } = useParams();
@@ -67,6 +68,12 @@ const CaseDetails = () => {
           currentStatus={caseDetails.status}
         />
       </div>
+
+      {caseDetails.status === "SUSPENDED" && (
+        <CaseWarningBanner 
+          message="Attention needed: This dispute has been flagged for human review due to Fraud Claim, Legal Threat Detected, Regulatory Risk"
+        />
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-muted/50 rounded-lg">
         <div className="flex items-center gap-2">
