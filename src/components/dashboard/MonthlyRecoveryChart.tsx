@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ComposedChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Line } from 'recharts';
 import { Skeleton } from "@/components/ui/skeleton";
@@ -15,8 +14,8 @@ interface MonthlyRecoveryChartProps {
 }
 
 const CHART_COLORS = {
-  bars: '#60A5FA',
-  line: '#2563EB'
+  bars: '#F1F1F1',
+  line: '#000000'
 };
 
 const formatCurrency = (value: number) => {

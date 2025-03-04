@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Bar, ComposedChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, Line } from "recharts";
 
@@ -8,8 +7,8 @@ interface PortfolioAgingProps {
 }
 
 const CHART_COLORS = {
-  bars: ['#60A5FA', '#34D399', '#FBBF24', '#FB923C', '#F87171'],
-  line: '#2563EB'
+  bars: '#F1F1F1',
+  line: '#000000'
 };
 
 const formatCurrency = (value: number) => {
@@ -26,9 +25,9 @@ const formatNumber = (value: number) => {
 };
 
 export const PortfolioAging = ({ isLoading, data }: PortfolioAgingProps) => {
-  const colorizedData = data?.map((item, index) => ({
+  const colorizedData = data?.map((item) => ({
     ...item,
-    fill: CHART_COLORS.bars[index % CHART_COLORS.bars.length]
+    fill: CHART_COLORS.bars
   }));
 
   return (
