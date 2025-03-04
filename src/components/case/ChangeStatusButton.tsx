@@ -21,7 +21,7 @@ import { useToast } from "@/hooks/use-toast";
 
 interface ChangeStatusButtonProps {
   caseId: string;
-  currentStatus: "ACTIVE" | "CLOSED" | "SUSPENDED";
+  currentStatus: "ACTIVE" | "CLOSED" | "SUSPENDED" | "CANCELLED";
 }
 
 export function ChangeStatusButton({ caseId, currentStatus }: ChangeStatusButtonProps) {
@@ -78,6 +78,7 @@ export function ChangeStatusButton({ caseId, currentStatus }: ChangeStatusButton
               <SelectItem value="ACTIVE">Active</SelectItem>
               <SelectItem value="CLOSED">Closed</SelectItem>
               <SelectItem value="SUSPENDED">Suspended</SelectItem>
+              <SelectItem value="CANCELLED">Cancelled</SelectItem>
             </SelectContent>
           </Select>
           <Button onClick={handleStatusChange}>

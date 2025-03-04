@@ -1,9 +1,10 @@
+
 export type CaseWithDetails = {
   id: string;
   case_number: string;
   debt_amount: number;
   debt_remaining: number;
-  status: "ACTIVE" | "CLOSED" | "SUSPENDED";
+  status: "ACTIVE" | "CLOSED" | "SUSPENDED" | "CANCELLED";
   priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
   due_date: string;
   created_at: string;
