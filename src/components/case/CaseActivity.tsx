@@ -2,7 +2,7 @@
 import { format } from 'date-fns';
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MessageCircle, PhoneCall, Mail, ArrowLeftFromLine, ArrowRightFromLine, Bot, User } from "lucide-react";
+import { MessageCircle, PhoneCall, Mail, Bot, User } from "lucide-react";
 import { getCommsStatusColor } from "@/utils/case-colors";
 import { Communication } from "@/types/case";
 import { useState } from 'react';
@@ -78,7 +78,7 @@ export const CaseActivity = ({ communications }: CaseActivityProps) => {
               <div 
                 key={comm.id} 
                 className={`flex items-start gap-4 p-4 rounded-lg ${
-                  comm.direction === 'inbound' ? 'bg-blue-50' : 'bg-gray-50'
+                  comm.direction === 'inbound' ? '' : 'flex-row-reverse'
                 }`}
               >
                 <div className={`flex items-center justify-center w-10 h-10 rounded-full ${
@@ -90,13 +90,19 @@ export const CaseActivity = ({ communications }: CaseActivityProps) => {
                     <Bot className="h-5 w-5 text-gray-600" />
                   )}
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
+                <div className={`flex-1 ${comm.direction === 'outbound' ? 'text-right' : ''}`}>
+                  <div className={`flex items-center justify-between mb-2 ${
+                    comm.direction === 'outbound' ? 'flex-row-reverse' : ''
+                  }`}>
+                    <div className={`flex items-center gap-2 ${
+                      comm.direction === 'outbound' ? 'flex-row-reverse' : ''
+                    }`}>
                       <span className="font-medium">
                         {comm.direction === 'inbound' ? 'Customer' : 'System'}
                       </span>
-                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                      <div className={`flex items-center gap-1 text-sm text-muted-foreground ${
+                        comm.direction === 'outbound' ? 'flex-row-reverse' : ''
+                      }`}>
                         <span>via</span>
                         {getCommsIcon(comm.comms_type)}
                         <span className="capitalize">{comm.comms_type}</span>
@@ -110,7 +116,13 @@ export const CaseActivity = ({ communications }: CaseActivityProps) => {
                     </span>
                   </div>
                   {comm.content && (
-                    <p className="text-sm">{comm.content}</p>
+                    <div className={`p-3 rounded-lg ${
+                      comm.direction === 'inbound' 
+                        ? 'bg-blue-50 mr-auto' 
+                        : 'bg-gray-50 ml-auto'
+                    } max-w-[80%]`}>
+                      <p className="text-sm">{comm.content}</p>
+                    </div>
                   )}
                 </div>
               </div>
