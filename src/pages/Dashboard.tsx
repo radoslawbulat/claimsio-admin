@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, FileUp } from "lucide-react";
 import AddDebtorModal from "@/components/AddDebtorModal";
+import FileUploadModal from "@/components/FileUploadModal";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { CoreMetrics } from "@/components/dashboard/CoreMetrics";
@@ -37,6 +38,7 @@ const fetchMonthlyRecoveries = async () => {
 
 const Dashboard = () => {
   const [isAddDebtorOpen, setIsAddDebtorOpen] = useState(false);
+  const [isFileUploadOpen, setIsFileUploadOpen] = useState(false);
 
   const { data: analytics, isLoading, error } = useQuery({
     queryKey: ['analytics'],
@@ -62,7 +64,7 @@ const Dashboard = () => {
     <div className="space-y-8 animate-fade-in p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Performance</h1>
+          <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
         </div>
         <div className="flex items-center gap-4">
           <Select defaultValue="all">
@@ -74,13 +76,22 @@ const Dashboard = () => {
               <SelectItem value="npl">NPL</SelectItem>
             </SelectContent>
           </Select>
-          <Button 
-            className="gap-2"
-            onClick={() => setIsAddDebtorOpen(true)}
-          >
-            <PlusCircle size={20} />
-            Add a debtor
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              className="gap-2"
+              onClick={() => setIsFileUploadOpen(true)}
+            >
+              <FileUp size={20} />
+              Upload CSV
+            </Button>
+            <Button 
+              className="gap-2"
+              onClick={() => setIsAddDebtorOpen(true)}
+            >
+              <PlusCircle size={20} />
+              Add a debtor
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -109,6 +120,11 @@ const Dashboard = () => {
       <AddDebtorModal 
         isOpen={isAddDebtorOpen}
         onClose={() => setIsAddDebtorOpen(false)}
+      />
+      
+      <FileUploadModal
+        isOpen={isFileUploadOpen}
+        onClose={() => setIsFileUploadOpen(false)}
       />
     </div>
   );
