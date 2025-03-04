@@ -12,6 +12,7 @@ import NotFound from "./pages/NotFound";
 import Collections from "./pages/Collections";
 import CaseDetails from "./pages/CaseDetails";
 import Disputes from "./pages/Disputes";
+import Payments from "./pages/Payments";
 
 const queryClient = new QueryClient();
 
@@ -75,6 +76,16 @@ const App = () => (
               <ProtectedRoute>
                 <AppLayout>
                   <Disputes />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/payments"
+            element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <Payments />
                 </AppLayout>
               </ProtectedRoute>
             }
