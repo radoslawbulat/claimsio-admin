@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, FileUp } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { PlusCircle, FileUp, ChevronDown } from "lucide-react";
 import AddDebtorModal from "@/components/AddDebtorModal";
 import FileUploadModal from "@/components/FileUploadModal";
 import { supabase } from "@/integrations/supabase/client";
@@ -67,31 +68,33 @@ const Dashboard = () => {
           <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
         </div>
         <div className="flex items-center gap-4">
-          <Select defaultValue="all">
+          <Select defaultValue="demo">
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select portfolio" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Portfolios</SelectItem>
-              <SelectItem value="npl">NPL</SelectItem>
+              <SelectItem value="demo">Demo</SelectItem>
             </SelectContent>
           </Select>
-          <div className="flex gap-2">
-            <Button 
-              className="gap-2"
-              onClick={() => setIsFileUploadOpen(true)}
-            >
-              <FileUp size={20} />
-              Upload CSV
-            </Button>
-            <Button 
-              className="gap-2"
-              onClick={() => setIsAddDebtorOpen(true)}
-            >
-              <PlusCircle size={20} />
-              Add a debtor
-            </Button>
-          </div>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button className="gap-2">
+                Start collection
+                <ChevronDown size={16} />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setIsFileUploadOpen(true)} className="gap-2">
+                <FileUp size={16} />
+                Upload CSV
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setIsAddDebtorOpen(true)} className="gap-2">
+                <PlusCircle size={16} />
+                Add a debtor
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
