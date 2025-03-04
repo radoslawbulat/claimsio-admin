@@ -1,4 +1,3 @@
-
 import { format } from 'date-fns';
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,12 +12,7 @@ export const CaseInformation = ({ caseDetails }: CaseInformationProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          Case Information
-          <span className="text-lg font-normal text-muted-foreground">
-            {caseDetails.case_number}
-          </span>
-        </CardTitle>
+        <CardTitle>Case Information</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

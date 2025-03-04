@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Hash, User, Clock, Shield } from "lucide-react";
+import { ArrowLeft, User, Clock, Shield } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CaseInformation } from "@/components/case/CaseInformation";
 import { DebtorInformation } from "@/components/case/DebtorInformation";
@@ -13,6 +12,7 @@ import { fetchCaseDetails, fetchCaseComms, fetchCaseAttachments } from "@/utils/
 import { format } from 'date-fns';
 import { Badge } from "@/components/ui/badge";
 import { getStatusColor } from "@/utils/case-colors";
+import { ChangeStatusButton } from "@/components/case/ChangeStatusButton";
 
 const CaseDetails = () => {
   const { id } = useParams();
@@ -56,14 +56,16 @@ const CaseDetails = () => {
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <Button variant="ghost" asChild>
-            <Link to={getBackRoute()} className="flex items-center gap-2">
-              <ArrowLeft size={16} />
-              Back to {fromRoute === 'disputes' ? 'Disputes' : 'Collections'}
-            </Link>
-          </Button>
-        </div>
+        <Button variant="ghost" asChild>
+          <Link to={getBackRoute()} className="flex items-center gap-2">
+            <ArrowLeft size={16} />
+            Back to {fromRoute === 'disputes' ? 'Disputes' : 'Collections'}
+          </Link>
+        </Button>
+        <ChangeStatusButton 
+          caseId={caseDetails.id} 
+          currentStatus={caseDetails.status}
+        />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-muted/50 rounded-lg">
