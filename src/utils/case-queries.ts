@@ -48,3 +48,20 @@ export const fetchCaseAttachments = async (caseId: string) => {
   console.log('Fetched attachments:', data);
   return data as CaseAttachment[];
 };
+
+export const fetchCasePayments = async (caseId: string) => {
+  console.log('Fetching payments for case:', caseId);
+  const { data, error } = await supabase
+    .from('payments')
+    .select('*')
+    .eq('case_id', caseId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching case payments:', error);
+    throw error;
+  }
+  
+  console.log('Fetched payments:', data);
+  return data;
+};

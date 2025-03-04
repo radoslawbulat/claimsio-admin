@@ -8,12 +8,13 @@ import { CaseInformation } from "@/components/case/CaseInformation";
 import { DebtorInformation } from "@/components/case/DebtorInformation";
 import { CaseActivity } from "@/components/case/CaseActivity";
 import { CaseDocuments } from "@/components/case/CaseDocuments";
-import { fetchCaseDetails, fetchCaseComms, fetchCaseAttachments } from "@/utils/case-queries";
+import { fetchCaseDetails, fetchCaseComms, fetchCaseAttachments, fetchCasePayments } from "@/utils/case-queries";
 import { format } from 'date-fns';
 import { Badge } from "@/components/ui/badge";
 import { getStatusColor } from "@/utils/case-colors";
 import { ChangeStatusButton } from "@/components/case/ChangeStatusButton";
 import { CaseWarningBanner } from "@/components/case/CaseWarningBanner";
+import { CasePayments } from "@/components/case/CasePayments";
 
 const CaseDetails = () => {
   const { id } = useParams();
@@ -51,7 +52,13 @@ const CaseDetails = () => {
     enabled: !!id,
   });
 
-  if (isLoadingCase || isLoadingComms || isLoadingAttachments) {
+  const { data: payments, isLoading: isLoadingPayments } = useQuery({
+    queryKey: ['payments', id],
+    queryFn: () => fetchCasePayments(id as string),
+    enabled: !!id,
+  });
+
+  if (isLoadingCase || isLoadingComms || isLoadingAttachments || isLoadingPayments) {
     return <div className="p-6">Loading...</div>;
   }
 
@@ -178,8 +185,11 @@ const CaseDetails = () => {
         </TabsContent>
 
         <TabsContent value="activity" className="mt-6">
-          <div className="text-muted-foreground text-center py-8">
-            Activity history will be implemented soon
+          <div className="space-y-6">
+            <CasePayments payments={payments || []} />
+            <div className="text-muted-foreground text-center py-8">
+              Additional activity history will be implemented soon
+            </div>
           </div>
         </TabsContent>
       </Tabs>
