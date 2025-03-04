@@ -22,6 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { getStatusColor } from '@/utils/case-colors';
+import { useToast } from "@/components/ui/use-toast";
 
 type CaseWithDebtor = {
   id: string;
@@ -82,17 +83,44 @@ type SortConfig = {
 
 const Collections = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [selectedStatus, setSelectedStatus] = useState<CaseWithDebtor['status'] | 'ALL' | null>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortConfig, setSortConfig] = useState<SortConfig>({ column: null, direction: 'asc' });
   
-  const { data: cases, isLoading, error } = useQuery({
+  const { data: cases, isLoading, error, refetch } = useQuery({
     queryKey: ['cases', selectedStatus],
     queryFn: () => fetchCasesWithDebtors(selectedStatus),
   });
 
-  const handleRowClick = (caseId: string) => {
-    navigate(`/case/${caseId}`, { state: { from: 'collections' } });
+  const handleStatusChange = async (caseId: string, newStatus: CaseWithDebtor['status']) => {
+    const { error } = await supabase
+      .from('cases')
+      .update({ status: newStatus })
+      .eq('id', caseId);
+
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to update case status"
+      });
+    } else {
+      toast({
+        title: "Success",
+        description: "Case status updated successfully"
+      });
+      refetch();
+    }
+  };
+
+  const handleRowClick = (e: React.MouseEvent, caseId: string) => {
+    // Prevent navigation if clicking on the status select
+    if ((e.target as HTMLElement).closest('.status-select')) {
+      e.preventDefault();
+      return;
+    }
+    navigate(`/case/${caseId}`);
   };
 
   const handleSort = (column: SortConfig['column']) => {
@@ -231,7 +259,7 @@ const Collections = () => {
               sortedCases.map((caseItem) => (
                 <TableRow 
                   key={caseItem.id}
-                  onClick={() => handleRowClick(caseItem.id)}
+                  onClick={(e) => handleRowClick(e, caseItem.id)}
                   className="cursor-pointer hover:bg-muted"
                 >
                   <TableCell className="font-medium">{caseItem.case_number}</TableCell>
@@ -247,12 +275,21 @@ const Collections = () => {
                     }).format(caseItem.debt_remaining / 100)}
                   </TableCell>
                   <TableCell>
-                    <Badge 
-                      variant="default"
-                      className={getStatusColor(caseItem.status)}
-                    >
-                      {caseItem.status.toLowerCase()}
-                    </Badge>
+                    <div className="status-select" onClick={e => e.stopPropagation()}>
+                      <Select
+                        value={caseItem.status}
+                        onValueChange={(value: CaseWithDebtor['status']) => handleStatusChange(caseItem.id, value)}
+                      >
+                        <SelectTrigger className={`w-[130px] ${getStatusColor(caseItem.status)}`}>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="ACTIVE">Active</SelectItem>
+                          <SelectItem value="CLOSED">Closed</SelectItem>
+                          <SelectItem value="SUSPENDED">Suspended</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </TableCell>
                   <TableCell>
                     {format(new Date(caseItem.due_date), 'MMM d, yyyy')}
