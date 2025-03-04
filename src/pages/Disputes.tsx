@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { Input } from "@/components/ui/input";
+import { getStatusColor } from "@/utils/case-colors";
 
 type SortConfig = {
   column: 'case_number' | 'debtor' | 'debt_amount' | 'status' | 'due_date' | 'latest_comm' | null;
@@ -233,7 +234,10 @@ const Disputes = () => {
                     }).format(dispute.debt_amount / 100)}
                   </TableCell>
                   <TableCell>
-                    <Badge variant="destructive" className="bg-orange-400 hover:bg-orange-400">
+                    <Badge 
+                      variant="default"
+                      className={getStatusColor(dispute.status)}
+                    >
                       {dispute.status.toLowerCase()}
                     </Badge>
                   </TableCell>
