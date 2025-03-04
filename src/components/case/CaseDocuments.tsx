@@ -1,11 +1,15 @@
 
-import React from 'react';
-import { FileText, Download, Eye } from "lucide-react";
+import React, { useState } from 'react';
+import { FileText, Download, Eye, X } from "lucide-react";
 import { format } from 'date-fns';
 import { Button } from "@/components/ui/button";
 import { CaseAttachment } from "@/types/case";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import {
+  Dialog,
+  DialogContent,
+} from "@/components/ui/dialog";
 
 interface CaseDocumentsProps {
   documents: CaseAttachment[];
@@ -13,6 +17,8 @@ interface CaseDocumentsProps {
 
 export const CaseDocuments = ({ documents }: CaseDocumentsProps) => {
   const { toast } = useToast();
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const handleDownload = async (doc: CaseAttachment) => {
     try {
@@ -46,16 +52,13 @@ export const CaseDocuments = ({ documents }: CaseDocumentsProps) => {
 
   const handlePreview = async (doc: CaseAttachment) => {
     try {
-      const { data: { publicUrl }, error } = await supabase.storage
+      const { data } = await supabase.storage
         .from('case-attachments')
         .getPublicUrl(doc.storage_path);
 
-      if (error) {
-        throw error;
-      }
-
-      // Open preview in new tab
-      window.open(publicUrl, '_blank');
+      // Open preview in modal
+      setPreviewUrl(data.publicUrl);
+      setIsPreviewOpen(true);
 
     } catch (error) {
       console.error('Error previewing file:', error);
@@ -117,6 +120,21 @@ export const CaseDocuments = ({ documents }: CaseDocumentsProps) => {
           </div>
         ))}
       </div>
+
+      <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+        <DialogContent className="max-w-4xl h-[80vh]">
+          <div className="relative w-full h-full">
+            {previewUrl && (
+              <iframe
+                src={previewUrl}
+                className="w-full h-full"
+                title="Document Preview"
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
+
