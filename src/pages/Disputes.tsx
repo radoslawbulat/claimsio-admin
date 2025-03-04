@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Shield, PlusCircle } from "lucide-react";
@@ -12,6 +13,7 @@ import {
 } from "@/components/ui/table";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Badge } from "@/components/ui/badge";
 
 const fetchDisputes = async () => {
   const { data, error } = await supabase
@@ -25,6 +27,11 @@ const fetchDisputes = async () => {
 
   if (error) throw error;
   return data;
+};
+
+const formatDisputeReason = (reason: string | null) => {
+  if (!reason) return 'N/A';
+  return reason.toLowerCase().replace(/_/g, ' ');
 };
 
 const Disputes = () => {
@@ -62,18 +69,19 @@ const Disputes = () => {
               <TableHead>Amount</TableHead>
               <TableHead>Due Date</TableHead>
               <TableHead>Created</TableHead>
+              <TableHead>Reason</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-4">
+                <TableCell colSpan={7} className="text-center py-4">
                   Loading...
                 </TableCell>
               </TableRow>
             ) : disputes?.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-4">
+                <TableCell colSpan={7} className="text-center py-4">
                   No disputes found
                 </TableCell>
               </TableRow>
@@ -102,6 +110,11 @@ const Disputes = () => {
                   </TableCell>
                   <TableCell>
                     {new Date(dispute.created_at).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="secondary" className="capitalize">
+                      {formatDisputeReason(dispute.dispute_reason)}
+                    </Badge>
                   </TableCell>
                 </TableRow>
               ))

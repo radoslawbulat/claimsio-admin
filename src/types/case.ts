@@ -1,3 +1,4 @@
+
 export type CaseWithDetails = {
   id: string;
   case_number: string;
@@ -10,7 +11,7 @@ export type CaseWithDetails = {
   currency: string;
   creditor_name: string;
   case_description: string | null;
-  dispute_reason: "AMOUNT" | "IDENTITY" | "SERVICE" | "PAYMENT" | "LEGAL_DISPUTES" | "DOCUMENTATION" | "COMMUNICATION" | null;
+  dispute_reason: "Amount" | "Identity" | "Service" | "Payment" | "Legal" | "Documentation" | "Communication" | null;
   debtor: {
     first_name: string;
     last_name: string;
