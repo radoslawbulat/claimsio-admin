@@ -300,6 +300,7 @@ export type Database = {
         Returns: {
           month: string
           recovered: number
+          value: number
         }[]
       }
     }
