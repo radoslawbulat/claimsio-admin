@@ -1,6 +1,5 @@
-
 import { Card, CardContent } from "@/components/ui/card";
-import { CircleCheck, FileEdit, FilePlus, CalendarClock } from "lucide-react";
+import { Timer, CircleCheck, Percent, Files } from "lucide-react";
 
 interface CoreMetricsProps {
   isLoading: boolean;
@@ -32,8 +31,8 @@ export const CoreMetrics = ({ isLoading, error, analytics }: CoreMetricsProps) =
       <Card className="border-none shadow-none">
         <CardContent className="p-4">
           <div className="flex items-start gap-4">
-            <div className="p-2 rounded-lg bg-[#F2FCE2]">
-              <CircleCheck className="w-5 h-5 text-green-600" />
+            <div className="p-2 rounded-lg bg-[#FEF7CD]">
+              <Timer className="w-5 h-5 text-yellow-600" />
             </div>
             <div className="space-y-0.5">
               <div className="text-2xl font-bold text-gray-900">
@@ -50,8 +49,8 @@ export const CoreMetrics = ({ isLoading, error, analytics }: CoreMetricsProps) =
       <Card className="border-none shadow-none">
         <CardContent className="p-4">
           <div className="flex items-start gap-4">
-            <div className="p-2 rounded-lg bg-[#E5DEFF]">
-              <FileEdit className="w-5 h-5 text-purple-600" />
+            <div className="p-2 rounded-lg bg-[#F2FCE2]">
+              <CircleCheck className="w-5 h-5 text-green-600" />
             </div>
             <div className="space-y-0.5">
               <div className="text-2xl font-bold text-gray-900">
@@ -69,7 +68,7 @@ export const CoreMetrics = ({ isLoading, error, analytics }: CoreMetricsProps) =
         <CardContent className="p-4">
           <div className="flex items-start gap-4">
             <div className="p-2 rounded-lg bg-[#D3E4FD]">
-              <FilePlus className="w-5 h-5 text-blue-600" />
+              <Percent className="w-5 h-5 text-blue-600" />
             </div>
             <div className="space-y-0.5">
               <div className="text-2xl font-bold text-gray-900">
@@ -86,8 +85,8 @@ export const CoreMetrics = ({ isLoading, error, analytics }: CoreMetricsProps) =
       <Card className="border-none shadow-none">
         <CardContent className="p-4">
           <div className="flex items-start gap-4">
-            <div className="p-2 rounded-lg bg-[#FEF7CD]">
-              <CalendarClock className="w-5 h-5 text-yellow-600" />
+            <div className="p-2 rounded-lg bg-[#E5DEFF]">
+              <Files className="w-5 h-5 text-purple-600" />
             </div>
             <div className="space-y-0.5">
               <div className="text-2xl font-bold text-gray-900">
