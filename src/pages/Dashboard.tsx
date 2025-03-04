@@ -66,7 +66,7 @@ const Dashboard = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
-          <Badge variant="secondary" className="rounded-md">Overview</Badge>
+          <Badge variant="secondary">Overview</Badge>
         </div>
         <div className="flex items-center gap-4">
           <Select defaultValue="demo">

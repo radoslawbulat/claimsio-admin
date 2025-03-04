@@ -1,3 +1,4 @@
+
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   Sidebar,
@@ -23,7 +24,12 @@ import { Badge } from "@/components/ui/badge";
 const menuItems = [
   { title: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
   { title: "Collections", icon: Folder, path: "/collections" },
-  { title: "Disputes", icon: AlertCircle, path: "/disputes" },
+  { 
+    title: "Disputes", 
+    icon: AlertCircle, 
+    path: "/disputes",
+    badge: "New"
+  },
   { title: "Payments", icon: CreditCard, path: "/payments" },
 ];
 
@@ -69,12 +75,12 @@ const AppSidebar = () => {
                       }
                     >
                       <item.icon className="h-4 w-4" />
-                      <div className="flex items-center gap-2">
-                        <span>{item.title}</span>
-                        {item.title === "Disputes" && (
-                          <Badge variant="secondary" className="rounded-md text-xs">New</Badge>
-                        )}
-                      </div>
+                      <span>{item.title}</span>
+                      {item.badge && (
+                        <Badge variant="secondary" className="ml-auto">
+                          {item.badge}
+                        </Badge>
+                      )}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Shield, PlusCircle } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -12,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Badge } from "@/components/ui/badge";
 
 const fetchDisputes = async () => {
   const { data, error } = await supabase
@@ -38,7 +38,7 @@ const Disputes = () => {
             <Shield className="h-6 w-6 text-primary" />
             <h1 className="text-2xl font-semibold text-gray-900">Disputes</h1>
           </div>
-          <Badge variant="secondary" className="rounded-md">Active</Badge>
+          <Badge variant="secondary">Active</Badge>
         </div>
         <Button className="gap-2">
           <PlusCircle size={20} />

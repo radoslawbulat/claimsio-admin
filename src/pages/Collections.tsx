@@ -153,7 +153,7 @@ const Collections = () => {
       <div className="flex flex-col gap-4 mb-6">
         <div className="flex items-center gap-4">
           <h1 className="text-2xl font-bold">Collections</h1>
-          <Badge variant="secondary" className="rounded-md">Active</Badge>
+          <Badge variant="secondary">Active</Badge>
         </div>
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
           <div className="relative w-full sm:w-[300px]">
