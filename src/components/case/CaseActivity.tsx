@@ -1,3 +1,4 @@
+
 import { format } from 'date-fns';
 import { useState } from 'react';
 import { Badge } from "@/components/ui/badge";
@@ -36,15 +37,6 @@ export const CaseActivity = ({ communications }: CaseActivityProps) => {
         <div className="flex items-center justify-between">
           <CardTitle>Communication History</CardTitle>
           <div className="flex items-center gap-4">
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2"
-              onClick={() => setIsAddMessageOpen(true)}
-            >
-              <MessageSquarePlus className="h-4 w-4" />
-              Add
-            </Button>
             <Select value={typeFilter} onValueChange={(value: any) => setTypeFilter(value)}>
               <SelectTrigger className="w-[140px]">
                 <SelectValue placeholder="Type" />
@@ -66,6 +58,15 @@ export const CaseActivity = ({ communications }: CaseActivityProps) => {
                 <SelectItem value="outbound">Outbound</SelectItem>
               </SelectContent>
             </Select>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={() => setIsAddMessageOpen(true)}
+            >
+              <MessageSquarePlus className="h-4 w-4" />
+              Add
+            </Button>
           </div>
         </div>
       </CardHeader>
@@ -135,3 +136,4 @@ export const CaseActivity = ({ communications }: CaseActivityProps) => {
     </Card>
   );
 };
+
