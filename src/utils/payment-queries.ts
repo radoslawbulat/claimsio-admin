@@ -4,6 +4,11 @@ import { Payment } from "@/types/payment";
 
 export const fetchPayments = async () => {
   console.log('Fetching payments...');
+  
+  // First, let's check if we have an active session
+  const session = await supabase.auth.getSession();
+  console.log('Current session:', session);
+
   const { data, error } = await supabase
     .from('payments')
     .select(`
