@@ -16,8 +16,11 @@ import { supabase } from "@/integrations/supabase/client";
 const fetchDisputes = async () => {
   const { data, error } = await supabase
     .from('cases')
-    .select('*')
-    .eq('status', 'ACTIVE')
+    .select(`
+      *,
+      debtor:debtors(first_name, last_name)
+    `)
+    .eq('status', 'SUSPENDED')
     .order('created_at', { ascending: false });
 
   if (error) throw error;
@@ -48,22 +51,23 @@ const Disputes = () => {
           <TableHeader>
             <TableRow>
               <TableHead>Case Number</TableHead>
+              <TableHead>Debtor</TableHead>
               <TableHead>Creditor</TableHead>
               <TableHead>Amount</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>Due Date</TableHead>
               <TableHead>Created</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-4">
+                <TableCell colSpan={6} className="text-center py-4">
                   Loading...
                 </TableCell>
               </TableRow>
             ) : disputes?.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-4">
+                <TableCell colSpan={6} className="text-center py-4">
                   No disputes found
                 </TableCell>
               </TableRow>
@@ -71,6 +75,11 @@ const Disputes = () => {
               disputes?.map((dispute) => (
                 <TableRow key={dispute.id}>
                   <TableCell>{dispute.case_number}</TableCell>
+                  <TableCell>
+                    {dispute.debtor ? 
+                      `${dispute.debtor.first_name} ${dispute.debtor.last_name}` 
+                      : 'N/A'}
+                  </TableCell>
                   <TableCell>{dispute.creditor_name}</TableCell>
                   <TableCell>
                     {new Intl.NumberFormat('en-US', {
@@ -79,9 +88,7 @@ const Disputes = () => {
                     }).format(dispute.debt_amount / 100)}
                   </TableCell>
                   <TableCell>
-                    <span className="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">
-                      {dispute.status}
-                    </span>
+                    {new Date(dispute.due_date).toLocaleDateString()}
                   </TableCell>
                   <TableCell>
                     {new Date(dispute.created_at).toLocaleDateString()}
