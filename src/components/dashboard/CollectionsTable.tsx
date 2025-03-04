@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
@@ -63,7 +64,18 @@ const fetchCasesWithDebtors = async (sortConfig: SortConfig) => {
   }
 
   const { data, error } = await query;
-  if (error) throw error;
+  
+  if (error) {
+    console.error('Error fetching cases:', error);
+    throw error;
+  }
+
+  console.log('Raw cases data:', data);
+
+  if (!data) {
+    console.log('No data returned from query');
+    return [];
+  }
 
   const transformedData = data.map(item => ({
     ...item,
@@ -73,6 +85,8 @@ const fetchCasesWithDebtors = async (sortConfig: SortConfig) => {
         )[0].created_at }
       : null
   }));
+
+  console.log('Transformed data:', transformedData);
 
   let sortedData = [...transformedData];
 
