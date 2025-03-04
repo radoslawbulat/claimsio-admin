@@ -142,6 +142,7 @@ const Payments = () => {
                     {payment.cases ? (
                       <Link 
                         to={`/case/${payment.case_id}`}
+                        state={{ from: 'payments' }}
                         className="text-primary hover:underline"
                       >
                         {payment.cases.case_number}
