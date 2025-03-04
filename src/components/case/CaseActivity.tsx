@@ -1,10 +1,12 @@
 import { format } from 'date-fns';
+import { useState } from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Bot, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Bot, MessageSquarePlus, User } from "lucide-react";
 import { getCommsStatusColor, getCommsTypeColor } from "@/utils/case-colors";
 import { Communication } from "@/types/case";
-import { useState } from 'react';
+import { AddMessageModal } from "./AddMessageModal";
 import {
   Select,
   SelectContent,
@@ -18,6 +20,7 @@ interface CaseActivityProps {
 }
 
 export const CaseActivity = ({ communications }: CaseActivityProps) => {
+  const [isAddMessageOpen, setIsAddMessageOpen] = useState(false);
   const [directionFilter, setDirectionFilter] = useState<'all' | 'inbound' | 'outbound'>('all');
   const [typeFilter, setTypeFilter] = useState<'all' | 'call' | 'email' | 'sms'>('all');
 
@@ -32,7 +35,16 @@ export const CaseActivity = ({ communications }: CaseActivityProps) => {
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>Communication History</CardTitle>
-          <div className="flex gap-4">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={() => setIsAddMessageOpen(true)}
+            >
+              <MessageSquarePlus className="h-4 w-4" />
+              Add Message
+            </Button>
             <Select value={typeFilter} onValueChange={(value: any) => setTypeFilter(value)}>
               <SelectTrigger className="w-[140px]">
                 <SelectValue placeholder="Type" />
@@ -116,6 +128,10 @@ export const CaseActivity = ({ communications }: CaseActivityProps) => {
           </div>
         )}
       </CardContent>
+      <AddMessageModal 
+        isOpen={isAddMessageOpen}
+        onClose={() => setIsAddMessageOpen(false)}
+      />
     </Card>
   );
 };
