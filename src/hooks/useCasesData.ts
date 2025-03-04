@@ -1,4 +1,3 @@
-
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from "@/integrations/supabase/client";
 import type { CaseWithDebtor } from '@/types/case';
@@ -9,14 +8,21 @@ export type SortConfig = {
 };
 
 const fetchCasesWithDebtors = async (sortConfig: SortConfig) => {
-  console.log('Fetching all cases...');
-
+  console.log('Fetching cases with debtors...');
+  
   const { data: casesData, error: casesError } = await supabase
     .from('cases')
     .select(`
-      *,
-      debtor:debtors!cases_debtor_id_fkey(*)
-    `);
+      id,
+      case_number,
+      debt_remaining,
+      status,
+      due_date,
+      currency,
+      debtor:debtors!cases_debtor_id_fkey(first_name, last_name),
+      latest_comm:comms(created_at)
+    `)
+    .order('created_at', { ascending: false });
 
   if (casesError) {
     console.error('Error fetching cases:', casesError);
@@ -30,35 +36,22 @@ const fetchCasesWithDebtors = async (sortConfig: SortConfig) => {
     return [];
   }
 
-  const casesWithComms = await Promise.all(
-    casesData.map(async (caseItem) => {
-      const { data: commsData, error: commsError } = await supabase
-        .from('comms')
-        .select('created_at')
-        .eq('case_id', caseItem.id)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
-
-      if (commsError && commsError.code !== 'PGRST116') {
-        console.error('Error fetching communications:', commsError);
-      }
-
-      return {
-        id: caseItem.id,
-        case_number: caseItem.case_number,
-        debt_remaining: caseItem.debt_remaining,
-        status: caseItem.status,
-        due_date: caseItem.due_date,
-        currency: caseItem.currency,
-        debtor: caseItem.debtor ? {
-          first_name: caseItem.debtor.first_name,
-          last_name: caseItem.debtor.last_name
-        } : null,
-        latest_comm: commsData ? { created_at: commsData.created_at } : null
-      };
-    })
-  );
+  // Transform the data to match our type
+  const casesWithComms = casesData.map(caseItem => ({
+    id: caseItem.id,
+    case_number: caseItem.case_number,
+    debt_remaining: caseItem.debt_remaining,
+    status: caseItem.status,
+    due_date: caseItem.due_date,
+    currency: caseItem.currency,
+    debtor: caseItem.debtor ? {
+      first_name: caseItem.debtor.first_name,
+      last_name: caseItem.debtor.last_name
+    } : null,
+    latest_comm: caseItem.latest_comm && caseItem.latest_comm.length > 0
+      ? { created_at: caseItem.latest_comm[0].created_at }
+      : null
+  }));
 
   if (sortConfig.column) {
     casesWithComms.sort((a, b) => {
