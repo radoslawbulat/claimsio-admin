@@ -2,7 +2,8 @@
 import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, FileUp } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { PlusCircle, FileUp, Play } from "lucide-react";
 import AddDebtorModal from "@/components/AddDebtorModal";
 import FileUploadModal from "@/components/FileUploadModal";
 import { supabase } from "@/integrations/supabase/client";
@@ -76,22 +77,24 @@ const Dashboard = () => {
               <SelectItem value="demo">Demo</SelectItem>
             </SelectContent>
           </Select>
-          <div className="flex gap-2">
-            <Button 
-              className="gap-2"
-              onClick={() => setIsFileUploadOpen(true)}
-            >
-              <FileUp size={20} />
-              Upload CSV
-            </Button>
-            <Button 
-              className="gap-2"
-              onClick={() => setIsAddDebtorOpen(true)}
-            >
-              <PlusCircle size={20} />
-              Add a debtor
-            </Button>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button className="gap-2">
+                <Play size={20} />
+                Start collection
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={() => setIsFileUploadOpen(true)} className="gap-2">
+                <FileUp size={16} />
+                Upload CSV
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setIsAddDebtorOpen(true)} className="gap-2">
+                <PlusCircle size={16} />
+                Add a debtor
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
