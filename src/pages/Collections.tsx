@@ -92,7 +92,7 @@ const Collections = () => {
   });
 
   const handleRowClick = (caseId: string) => {
-    navigate(`/case/${caseId}`);
+    navigate(`/case/${caseId}`, { state: { from: 'collections' } });
   };
 
   const handleSort = (column: SortConfig['column']) => {

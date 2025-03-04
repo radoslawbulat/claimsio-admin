@@ -36,7 +36,7 @@ const Disputes = () => {
 
   const handleRowClick = (e: React.MouseEvent, caseId: string) => {
     e.preventDefault();
-    navigate(`/case/${caseId}`);
+    navigate(`/case/${caseId}`, { state: { from: 'disputes' } });
   };
 
   return (

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -10,6 +10,12 @@ import { fetchCaseDetails, fetchCaseComms } from "@/utils/case-queries";
 
 const CaseDetails = () => {
   const { id } = useParams();
+  const location = useLocation();
+  const fromRoute = location.state?.from || 'collections';
+
+  const getBackRoute = () => {
+    return fromRoute === 'disputes' ? '/disputes' : '/collections';
+  };
 
   const { data: caseDetails, isLoading: isLoadingCase, error: caseError } = useQuery({
     queryKey: ['case', id],
@@ -35,9 +41,9 @@ const CaseDetails = () => {
     <div className="p-6">
       <div className="mb-8">
         <Button variant="ghost" asChild>
-          <Link to="/collections" className="flex items-center gap-2">
+          <Link to={getBackRoute()} className="flex items-center gap-2">
             <ArrowLeft size={16} />
-            Back to Collections
+            Back to {fromRoute === 'disputes' ? 'Disputes' : 'Collections'}
           </Link>
         </Button>
       </div>
