@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { FileUpload } from "lucide-react";
+import { Upload } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
 interface FileUploadModalProps {
@@ -72,7 +72,7 @@ const FileUploadModal = ({ isOpen, onClose }: FileUploadModalProps) => {
             ${isDragging ? 'border-primary bg-primary/5' : 'border-input'}
           `}
         >
-          <FileUpload className="h-8 w-8 text-muted-foreground" />
+          <Upload className="h-8 w-8 text-muted-foreground" />
           <div className="text-center">
             <p className="text-sm text-muted-foreground">
               Drag and drop your CSV file here, or{" "}
