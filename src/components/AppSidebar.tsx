@@ -19,11 +19,17 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { Badge } from "@/components/ui/badge";
 
 const menuItems = [
   { title: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
   { title: "Collections", icon: Folder, path: "/collections" },
-  { title: "Disputes", icon: AlertCircle, path: "/disputes" },
+  { 
+    title: "Disputes", 
+    icon: AlertCircle, 
+    path: "/disputes",
+    badge: "New"
+  },
   { title: "Payments", icon: CreditCard, path: "/payments" },
 ];
 
@@ -70,6 +76,11 @@ const AppSidebar = () => {
                     >
                       <item.icon className="h-4 w-4" />
                       <span>{item.title}</span>
+                      {item.badge && (
+                        <Badge variant="secondary" className="ml-auto">
+                          {item.badge}
+                        </Badge>
+                      )}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
