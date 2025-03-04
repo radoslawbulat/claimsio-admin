@@ -3,12 +3,15 @@ import React from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Hash, User, Clock, Shield } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CaseInformation } from "@/components/case/CaseInformation";
 import { DebtorInformation } from "@/components/case/DebtorInformation";
 import { CaseActivity } from "@/components/case/CaseActivity";
 import { fetchCaseDetails, fetchCaseComms } from "@/utils/case-queries";
+import { format } from 'date-fns';
+import { Badge } from "@/components/ui/badge";
+import { getStatusColor } from "@/utils/case-colors";
 
 const CaseDetails = () => {
   const { id } = useParams();
@@ -39,6 +42,10 @@ const CaseDetails = () => {
     return <div className="p-6">Error loading case details</div>;
   }
 
+  const lastActivity = communications && communications.length > 0
+    ? format(new Date(communications[0].created_at), 'MMM d, yyyy')
+    : 'No activity';
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
@@ -49,6 +56,46 @@ const CaseDetails = () => {
               Back to {fromRoute === 'disputes' ? 'Disputes' : 'Collections'}
             </Link>
           </Button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-muted/50 rounded-lg">
+        <div className="flex items-center gap-2">
+          <Hash className="text-muted-foreground" size={20} />
+          <div>
+            <div className="text-sm text-muted-foreground">Case ID</div>
+            <div className="font-medium">{caseDetails.case_number}</div>
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-2">
+          <User className="text-muted-foreground" size={20} />
+          <div>
+            <div className="text-sm text-muted-foreground">Debtor</div>
+            <div className="font-medium">
+              {caseDetails.debtor 
+                ? `${caseDetails.debtor.first_name} ${caseDetails.debtor.last_name}`
+                : 'N/A'}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Clock className="text-muted-foreground" size={20} />
+          <div>
+            <div className="text-sm text-muted-foreground">Last Activity</div>
+            <div className="font-medium">{lastActivity}</div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Shield className="text-muted-foreground" size={20} />
+          <div>
+            <div className="text-sm text-muted-foreground">Status</div>
+            <Badge className={getStatusColor(caseDetails.status)}>
+              {caseDetails.status.toLowerCase()}
+            </Badge>
+          </div>
         </div>
       </div>
 
