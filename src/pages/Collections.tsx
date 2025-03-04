@@ -151,7 +151,10 @@ const Collections = () => {
   return (
     <div className="p-6">
       <div className="flex flex-col gap-4 mb-6">
-        <h1 className="text-2xl font-bold">Collections</h1>
+        <div className="flex items-center gap-4">
+          <h1 className="text-2xl font-bold">Collections</h1>
+          <Badge variant="secondary" className="rounded-md">Active</Badge>
+        </div>
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
           <div className="relative w-full sm:w-[300px]">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />

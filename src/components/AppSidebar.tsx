@@ -1,4 +1,3 @@
-
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   Sidebar,
@@ -19,6 +18,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { Badge } from "@/components/ui/badge";
 
 const menuItems = [
   { title: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
@@ -69,7 +69,12 @@ const AppSidebar = () => {
                       }
                     >
                       <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
+                      <div className="flex items-center gap-2">
+                        <span>{item.title}</span>
+                        {item.title === "Disputes" && (
+                          <Badge variant="secondary" className="rounded-md text-xs">New</Badge>
+                        )}
+                      </div>
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
