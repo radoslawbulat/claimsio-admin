@@ -306,7 +306,7 @@ export type Database = {
     }
     Enums: {
       case_priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT"
-      case_status: "ACTIVE" | "CLOSED" | "SUSPENDED" | "CANCELLED"
+      case_status: "ACTIVE" | "CLOSED" | "SUSPENDED"
       comms_direction: "inbound" | "outbound"
       comms_status: "pending" | "completed" | "failed" | "cancelled"
       comms_type: "call" | "email" | "sms"
