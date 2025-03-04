@@ -43,7 +43,7 @@ const fetchCasesWithDebtors = async (sortConfig: SortConfig) => {
       status,
       due_date,
       currency,
-      debtor:debtors(first_name, last_name),
+      debtor:debtors!debtor_id(first_name, last_name),
       latest_comm:comms(created_at)
     `)
     .limit(5);
