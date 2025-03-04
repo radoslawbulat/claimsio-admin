@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { format } from 'date-fns';
-import { useNavigate } from 'react-router-dom';
-import { ArrowUpDown } from "lucide-react";
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table"
 import {
   Table,
   TableBody,
@@ -10,252 +11,131 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+} from "@/components/ui/table"
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import type { CaseWithDebtor } from '@/types/case';
-import { getStatusColor } from '@/utils/case-colors';
+import { Link, useLocation } from "react-router-dom";
 
-const getStatusStyle = (status: CaseWithDebtor['status']) => {
-  switch (status) {
-    case 'ACTIVE':
-      return { variant: 'default' as const, className: 'bg-blue-500 hover:bg-blue-500' };
-    case 'CLOSED':
-      return { variant: 'secondary' as const, className: 'bg-gray-500 hover:bg-gray-500' };
-    case 'SUSPENDED':
-      return { variant: 'destructive' as const, className: 'bg-orange-400 hover:bg-orange-400' };
-  }
-};
+interface Case {
+  id: string;
+  case_number: string;
+  debtor_name: string;
+  total_debt: number;
+  status: string;
+  created_at: string;
+}
 
-type SortConfig = {
-  column: 'case_number' | 'debtor' | 'debt_remaining' | 'status' | 'due_date' | 'latest_comm' | null;
-  direction: 'asc' | 'desc';
-};
-
-const fetchCasesWithDebtors = async (sortConfig: SortConfig) => {
-  console.log('Fetching cases with sort config:', sortConfig);
-  
-  let query = supabase
-    .from('cases')
-    .select(`
-      id,
-      case_number,
-      debt_remaining,
-      status,
-      due_date,
-      currency,
-      debtor:debtors(first_name, last_name),
-      latest_comm:comms(created_at)
-    `)
-    .limit(5);
-
-  // Apply server-side sorting if possible
-  if (sortConfig.column) {
-    switch (sortConfig.column) {
-      case 'case_number':
-      case 'debt_remaining':
-      case 'status':
-      case 'due_date':
-        query = query.order(sortConfig.column, { 
-          ascending: sortConfig.direction === 'asc'
-        });
-        break;
-    }
-  }
-
-  const { data, error } = await query;
-  if (error) throw error;
-
-  const transformedData = data.map(item => ({
-    ...item,
-    latest_comm: item.latest_comm && item.latest_comm.length > 0
-      ? { created_at: item.latest_comm.sort((a: { created_at: string }, b: { created_at: string }) => 
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        )[0].created_at }
-      : null
-  }));
-
-  let sortedData = [...transformedData];
-
-  // Apply client-side sorting for complex fields
-  if (sortConfig.column) {
-    sortedData.sort((a, b) => {
-      const direction = sortConfig.direction === 'asc' ? 1 : -1;
-
-      switch (sortConfig.column) {
-        case 'debtor':
-          const aName = a.debtor ? `${a.debtor.first_name} ${a.debtor.last_name}` : '';
-          const bName = b.debtor ? `${b.debtor.first_name} ${b.debtor.last_name}` : '';
-          return aName.localeCompare(bName) * direction;
-        case 'latest_comm':
-          const aTime = a.latest_comm ? new Date(a.latest_comm.created_at).getTime() : 0;
-          const bTime = b.latest_comm ? new Date(b.latest_comm.created_at).getTime() : 0;
-          return (aTime - bTime) * direction;
-        default:
-          return 0;
-      }
-    });
-  }
-
-  return sortedData as CaseWithDebtor[];
-};
+const columns: ColumnDef<Case>[] = [
+  {
+    accessorKey: "case_number",
+    header: "Case Number",
+  },
+  {
+    accessorKey: "debtor_name",
+    header: "Debtor Name",
+  },
+  {
+    accessorKey: "total_debt",
+    header: "Total Debt",
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+  },
+  {
+    accessorKey: "created_at",
+    header: "Created At",
+  },
+]
 
 export const CollectionsTable = () => {
-  const navigate = useNavigate();
-  const [sortConfig, setSortConfig] = useState<SortConfig>({ 
-    column: 'latest_comm', // Set default sort column
-    direction: 'desc'      // Set default sort direction
-  });
-  
-  const { data: cases, isLoading } = useQuery({
-    queryKey: ['dashboard-cases', sortConfig],
-    queryFn: () => fetchCasesWithDebtors(sortConfig),
-  });
+  const location = useLocation();
+  const isDashboard = location.pathname === "/dashboard";
+  const [cases, setCases] = useState<Case[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
-  const handleSort = (column: SortConfig['column']) => {
-    // Prevent default behavior which might cause scrolling
-    setSortConfig(current => ({
-      column,
-      direction: current.column === column && current.direction === 'asc' ? 'desc' : 'asc'
-    }));
-  };
+  useEffect(() => {
+    const fetchCases = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('cases')
+          .select('id, case_number, debtor_name:debtors(first_name, last_name), total_debt, status, created_at')
+          .order('created_at', { ascending: false })
+          .limit(5);
 
-  const handleRowClick = (e: React.MouseEvent, caseId: string) => {
-    // Prevent event bubbling
-    e.preventDefault();
-    navigate(`/case/${caseId}`);
-  };
+        if (error) {
+          setError(error);
+        } else {
+          const formattedCases = data.map((case_: any) => ({
+            ...case_,
+            debtor_name: case_.debtor_name ? `${case_.debtor_name.first_name} ${case_.debtor_name.last_name}` : 'N/A',
+          }));
+          setCases(formattedCases as Case[]);
+        }
+      } catch (err: any) {
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  if (isLoading) {
-    return <div className="text-center py-4">Loading...</div>;
+    fetchCases();
+  }, []);
+
+  const table = useReactTable({
+    data: cases,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  })
+
+  if (loading) {
+    return <p>Loading cases...</p>;
+  }
+
+  if (error) {
+    return <p>Error: {error.message}</p>;
   }
 
   return (
-    <div className="rounded-lg border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead 
-              onClick={(e) => {
-                e.preventDefault();
-                handleSort('case_number');
-              }}
-              className="group cursor-pointer"
-            >
-              ID
-              <ArrowUpDown className={`ml-2 h-4 w-4 inline transition-opacity ${
-                sortConfig.column === 'case_number' ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-              }`} />
-            </TableHead>
-            <TableHead 
-              onClick={(e) => {
-                e.preventDefault();
-                handleSort('debtor');
-              }}
-              className="group cursor-pointer"
-            >
-              Debtor
-              <ArrowUpDown className={`ml-2 h-4 w-4 inline transition-opacity ${
-                sortConfig.column === 'debtor' ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-              }`} />
-            </TableHead>
-            <TableHead 
-              onClick={(e) => {
-                e.preventDefault();
-                handleSort('debt_remaining');
-              }}
-              className="group cursor-pointer"
-            >
-              Debt Amount
-              <ArrowUpDown className={`ml-2 h-4 w-4 inline transition-opacity ${
-                sortConfig.column === 'debt_remaining' ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-              }`} />
-            </TableHead>
-            <TableHead 
-              onClick={(e) => {
-                e.preventDefault();
-                handleSort('status');
-              }}
-              className="group cursor-pointer"
-            >
-              Status
-              <ArrowUpDown className={`ml-2 h-4 w-4 inline transition-opacity ${
-                sortConfig.column === 'status' ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-              }`} />
-            </TableHead>
-            <TableHead 
-              onClick={(e) => {
-                e.preventDefault();
-                handleSort('due_date');
-              }}
-              className="group cursor-pointer"
-            >
-              Due Date
-              <ArrowUpDown className={`ml-2 h-4 w-4 inline transition-opacity ${
-                sortConfig.column === 'due_date' ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-              }`} />
-            </TableHead>
-            <TableHead 
-              onClick={(e) => {
-                e.preventDefault();
-                handleSort('latest_comm');
-              }}
-              className="group cursor-pointer"
-            >
-              Last Activity
-              <ArrowUpDown className={`ml-2 h-4 w-4 inline transition-opacity ${
-                sortConfig.column === 'latest_comm' ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-              }`} />
-            </TableHead>
+    <Table>
+      <TableHeader>
+        {table.getHeaderGroups().map((headerGroup) => (
+          <TableRow key={headerGroup.id}>
+            {headerGroup.headers.map((header) => {
+              return (
+                <TableHead key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                </TableHead>
+              )
+            })}
           </TableRow>
-        </TableHeader>
-        <TableBody>
-          {cases && cases.length > 0 ? (
-            cases.map((caseItem) => (
-              <TableRow 
-                key={caseItem.id}
-                onClick={(e) => handleRowClick(e, caseItem.id)}
-                className="cursor-pointer hover:bg-muted"
+        ))}
+      </TableHeader>
+      <TableBody>
+        {cases.map((case_) => (
+          <TableRow key={case_.id}>
+            <TableCell>
+              <Link 
+                to={`/case/${case_.id}`} 
+                state={{ from: isDashboard ? 'dashboard' : 'collections' }}
+                className="text-primary hover:underline"
               >
-                <TableCell className="font-medium">{caseItem.case_number}</TableCell>
-                <TableCell>
-                  {caseItem.debtor 
-                    ? `${caseItem.debtor.first_name} ${caseItem.debtor.last_name}`
-                    : 'N/A'}
-                </TableCell>
-                <TableCell>
-                  {new Intl.NumberFormat('en-US', {
-                    style: 'currency',
-                    currency: caseItem.currency,
-                  }).format(caseItem.debt_remaining / 100)}
-                </TableCell>
-                <TableCell>
-                  <Badge 
-                    variant="default"
-                    className={getStatusColor(caseItem.status)}
-                  >
-                    {caseItem.status.toLowerCase()}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  {format(new Date(caseItem.due_date), 'MMM d, yyyy')}
-                </TableCell>
-                <TableCell>
-                  {caseItem.latest_comm?.created_at 
-                    ? format(new Date(caseItem.latest_comm.created_at), 'MMM d, yyyy, hh:mm:ss a')
-                    : 'No activity'}
-                </TableCell>
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={6} className="text-center py-4">
-                No cases found
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </div>
+                {case_.case_number}
+              </Link>
+            </TableCell>
+            <TableCell>{case_.debtor_name}</TableCell>
+            <TableCell>${case_.total_debt}</TableCell>
+            <TableCell>{case_.status}</TableCell>
+            <TableCell>{new Date(case_.created_at).toLocaleDateString()}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 };
