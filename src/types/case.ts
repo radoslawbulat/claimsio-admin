@@ -48,3 +48,13 @@ export type CaseWithDebtor = {
     created_at: string;
   } | null;
 }
+
+export type CaseAttachment = {
+  id: string;
+  case_id: string;
+  file_name: string;
+  storage_path: string;
+  description: string | null;
+  created_at: string;
+  updated_at: string;
+}

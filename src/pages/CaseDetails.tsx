@@ -8,7 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CaseInformation } from "@/components/case/CaseInformation";
 import { DebtorInformation } from "@/components/case/DebtorInformation";
 import { CaseActivity } from "@/components/case/CaseActivity";
-import { fetchCaseDetails, fetchCaseComms } from "@/utils/case-queries";
+import { CaseDocuments } from "@/components/case/CaseDocuments";
+import { fetchCaseDetails, fetchCaseComms, fetchCaseAttachments } from "@/utils/case-queries";
 import { format } from 'date-fns';
 import { Badge } from "@/components/ui/badge";
 import { getStatusColor } from "@/utils/case-colors";
@@ -34,7 +35,13 @@ const CaseDetails = () => {
     enabled: !!id,
   });
 
-  if (isLoadingCase || isLoadingComms) {
+  const { data: attachments, isLoading: isLoadingAttachments } = useQuery({
+    queryKey: ['attachments', id],
+    queryFn: () => fetchCaseAttachments(id as string),
+    enabled: !!id,
+  });
+
+  if (isLoadingCase || isLoadingComms || isLoadingAttachments) {
     return <div className="p-6">Loading...</div>;
   }
 
@@ -108,6 +115,12 @@ const CaseDetails = () => {
             Case Details
           </TabsTrigger>
           <TabsTrigger 
+            value="documents" 
+            className="data-[state=active]:bg-background data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none flex-1"
+          >
+            Documents
+          </TabsTrigger>
+          <TabsTrigger 
             value="communication" 
             className="data-[state=active]:bg-background data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none flex-1"
           >
@@ -131,6 +144,10 @@ const CaseDetails = () => {
               />
             )}
           </div>
+        </TabsContent>
+
+        <TabsContent value="documents" className="mt-6">
+          <CaseDocuments documents={attachments || []} />
         </TabsContent>
 
         <TabsContent value="communication" className="mt-6">
