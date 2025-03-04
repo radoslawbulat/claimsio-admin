@@ -1,12 +1,11 @@
-
 export const getStatusColor = (status: "ACTIVE" | "CLOSED" | "SUSPENDED") => {
   switch (status) {
     case 'ACTIVE':
-      return 'bg-blue-500 hover:bg-blue-500';
+      return 'bg-green-500 hover:bg-green-500';
     case 'CLOSED':
       return 'bg-gray-500 hover:bg-gray-500';
     case 'SUSPENDED':
-      return 'bg-orange-400 hover:bg-orange-400';
+      return 'bg-red-500 hover:bg-red-500';
   }
 };
 
