@@ -21,7 +21,14 @@ const CaseDetails = () => {
   const fromRoute = location.state?.from || 'collections';
 
   const getBackRoute = () => {
-    return fromRoute === 'disputes' ? '/disputes' : '/collections';
+    switch (fromRoute) {
+      case 'disputes':
+        return '/disputes';
+      case 'payments':
+        return '/payments';
+      default:
+        return '/collections';
+    }
   };
 
   const { data: caseDetails, isLoading: isLoadingCase, error: caseError } = useQuery({
