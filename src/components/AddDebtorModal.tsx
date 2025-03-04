@@ -188,9 +188,6 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
       }
 
       toast.success("Debtor added successfully");
-      onClose();
-      
-      // Reset form
       setFormData({
         fullName: "",
         nationality: "",
@@ -202,6 +199,7 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
       });
       setSelectedFiles([]);
       setDateString("");
+      onClose();
       
     } catch (error) {
       console.error("Error adding debtor:", error);
@@ -213,7 +211,7 @@ const AddDebtorModal = ({ isOpen, onClose }: AddDebtorModalProps) => {
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent className="w-full h-full overflow-y-auto sm:max-w-[540px] p-0">
+      <SheetContent className="w-full h-full overflow-y-auto sm:max-w-[540px] p-0" onPointerDownOutside={onClose} onEscapeKeyDown={onClose}>
         <div className="p-6 h-full">
           <SheetHeader>
             <SheetTitle>Add a New Debtor</SheetTitle>
