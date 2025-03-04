@@ -7,7 +7,7 @@ export const fetchCaseDetails = async (caseId: string) => {
     .from('cases')
     .select(`
       *,
-      debtor:debtors(*)
+      debtor:debtors!cases_debtor_id_fkey(*)
     `)
     .eq('id', caseId)
     .single();
