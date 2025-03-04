@@ -1,5 +1,5 @@
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ComposedChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Line } from 'recharts';
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -35,9 +35,9 @@ const formatNumber = (value: number) => {
 export const MonthlyRecoveryChart = ({ isLoading, data }: MonthlyRecoveryChartProps) => {
   if (isLoading) {
     return (
-      <Card className="border-none bg-white w-full">
+      <Card className="border-none bg-white w-full flex-1">
         <CardHeader>
-          <CardTitle>Monthly Recoveries</CardTitle>
+          <h2 className="text-xl font-semibold">Monthly Recoveries</h2>
         </CardHeader>
         <CardContent>
           <div className="h-[300px] w-full">
@@ -49,9 +49,9 @@ export const MonthlyRecoveryChart = ({ isLoading, data }: MonthlyRecoveryChartPr
   }
 
   return (
-    <Card className="border-none bg-white w-full">
+    <Card className="border-none bg-white w-full flex-1">
       <CardHeader>
-        <CardTitle>Monthly Recoveries</CardTitle>
+        <h2 className="text-xl font-semibold">Monthly Recoveries</h2>
       </CardHeader>
       <CardContent>
         <div className="h-[300px] w-full">

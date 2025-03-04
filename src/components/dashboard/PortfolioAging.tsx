@@ -1,4 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Bar, ComposedChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, Line } from "recharts";
 
 interface PortfolioAgingProps {
@@ -31,9 +32,9 @@ export const PortfolioAging = ({ isLoading, data }: PortfolioAgingProps) => {
   }));
 
   return (
-    <Card className="border-none bg-white w-full">
+    <Card className="border-none bg-white w-full flex-1">
       <CardHeader>
-        <CardTitle>Collection Age</CardTitle>
+        <h2 className="text-xl font-semibold">Collection Age</h2>
       </CardHeader>
       <CardContent>
         <div className="h-[300px] w-full">
