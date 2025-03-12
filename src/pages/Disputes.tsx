@@ -12,10 +12,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
-import { format } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { getStatusColor } from "@/utils/case-colors";
 

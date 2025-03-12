@@ -40,7 +40,12 @@ type CaseWithDebtor = {
   } | null;
 }
 
-const fetchCasesWithDebtors = async (status: CaseWithDebtor['status'] | 'ALL' | null) => {
+type SortConfig = {
+  column: 'case_number' | 'debtor' | 'debt_remaining' | 'status' | 'due_date' | 'latest_comm' | 'age' | null;
+  direction: 'asc' | 'desc';
+};
+
+const fetchCasesWithDebtors = async (status: CaseWithDebtor['status'] | 'ALL' | null, currentSortConfig: SortConfig) => {
   let query = supabase
     .from('cases')
     .select(`
@@ -75,11 +80,11 @@ const fetchCasesWithDebtors = async (status: CaseWithDebtor['status'] | 'ALL' | 
 
   let sortedData = [...transformedData];
 
-  if (sortConfig.column) {
+  if (currentSortConfig.column) {
     sortedData.sort((a, b) => {
-      const direction = sortConfig.direction === 'asc' ? 1 : -1;
+      const direction = currentSortConfig.direction === 'asc' ? 1 : -1;
 
-      switch (sortConfig.column) {
+      switch (currentSortConfig.column) {
         case 'case_number':
           return a.case_number.localeCompare(b.case_number) * direction;
         case 'debtor':
@@ -107,11 +112,6 @@ const fetchCasesWithDebtors = async (status: CaseWithDebtor['status'] | 'ALL' | 
   return sortedData;
 };
 
-type SortConfig = {
-  column: 'case_number' | 'debtor' | 'debt_remaining' | 'status' | 'due_date' | 'latest_comm' | 'age' | null;
-  direction: 'asc' | 'desc';
-};
-
 const Collections = () => {
   const navigate = useNavigate();
   const [selectedStatus, setSelectedStatus] = useState<CaseWithDebtor['status'] | 'ALL' | null>('ALL');
@@ -119,8 +119,8 @@ const Collections = () => {
   const [sortConfig, setSortConfig] = useState<SortConfig>({ column: null, direction: 'asc' });
   
   const { data: cases, isLoading, error } = useQuery({
-    queryKey: ['cases', selectedStatus],
-    queryFn: () => fetchCasesWithDebtors(selectedStatus),
+    queryKey: ['cases', selectedStatus, sortConfig],
+    queryFn: () => fetchCasesWithDebtors(selectedStatus, sortConfig),
   });
 
   const handleRowClick = (caseId: string) => {
