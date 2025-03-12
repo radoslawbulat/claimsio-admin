@@ -52,7 +52,11 @@ const AppSidebar = () => {
     <Sidebar className="border-r">
       <SidebarContent>
         <div className="flex items-center h-14 px-4 border-b">
-          <h1 className="text-2xl font-bold">Claimsio</h1>
+          <img 
+            src="/lovable-uploads/78be5538-a3e1-4fab-a32a-cd69bb587dca.png" 
+            alt="Claimsio" 
+            className="h-8"
+          />
         </div>
         <SidebarGroup>
           <SidebarGroupContent>
