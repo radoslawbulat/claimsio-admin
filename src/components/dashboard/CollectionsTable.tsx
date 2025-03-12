@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useLocation, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,7 +15,7 @@ const columns = [
     header: "Debtor Name"
   },
   {
-    accessorKey: "total_debt",
+    accessorKey: "debt_amount",
     header: "Total Debt"
   },
   {
@@ -32,25 +32,37 @@ const columns = [
   }
 ];
 
+type CaseType = {
+  id: string;
+  case_number: string;
+  debt_amount: number;
+  status: string;
+  created_at: string;
+  debtor_name?: {
+    first_name: string;
+    last_name: string;
+  } | null;
+}
+
 export const CollectionsTable = () => {
   const location = useLocation();
   const isDashboard = location.pathname === "/dashboard";
-  const [cases, setCases] = useState([]);
+  const [cases, setCases] = useState<CaseType[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     const fetchCases = async () => {
       try {
         const { data, error } = await supabase
           .from('cases')
-          .select('id, case_number, debtor_name:debtors(first_name, last_name), total_debt, status, created_at')
+          .select('id, case_number, debt_amount, debtor_name:debtors(first_name, last_name), status, created_at')
           .order('created_at', { ascending: false })
           .limit(5);
 
         if (error) {
           setError(error);
-        } else {
+        } else if (data) {
           const formattedCases = data.map(case_ => ({
             ...case_,
             debtor_name: case_.debtor_name 
@@ -61,7 +73,7 @@ export const CollectionsTable = () => {
           setCases(formattedCases);
         }
       } catch (err) {
-        setError(err);
+        setError(err instanceof Error ? err : new Error('Unknown error occurred'));
       } finally {
         setLoading(false);
       }
@@ -102,7 +114,7 @@ export const CollectionsTable = () => {
               </Link>
             </TableCell>
             <TableCell>{case_.debtor_name}</TableCell>
-            <TableCell>${case_.total_debt}</TableCell>
+            <TableCell>${case_.debt_amount}</TableCell>
             <TableCell>{case_.status}</TableCell>
             <TableCell>{case_.age}</TableCell>
             <TableCell>
