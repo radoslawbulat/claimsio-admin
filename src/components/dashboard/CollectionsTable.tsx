@@ -38,7 +38,17 @@ type CaseType = {
   debt_amount: number;
   status: string;
   created_at: string;
-  debtor_name?: {
+  debtor_name: string;
+  age: number;
+}
+
+type RawCaseType = {
+  id: string;
+  case_number: string;
+  debt_amount: number;
+  status: string;
+  created_at: string;
+  debtor_name: {
     first_name: string;
     last_name: string;
   } | null;
@@ -63,7 +73,7 @@ export const CollectionsTable = () => {
         if (error) {
           setError(error);
         } else if (data) {
-          const formattedCases = data.map(case_ => ({
+          const formattedCases: CaseType[] = (data as RawCaseType[]).map(case_ => ({
             ...case_,
             debtor_name: case_.debtor_name 
               ? `${case_.debtor_name.first_name} ${case_.debtor_name.last_name}`
@@ -126,3 +136,4 @@ export const CollectionsTable = () => {
     </Table>
   );
 };
+
