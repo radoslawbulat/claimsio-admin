@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { format, differenceInDays } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Shield, PlusCircle, ArrowUpDown, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -18,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { getStatusColor } from "@/utils/case-colors";
 
 type SortConfig = {
-  column: 'case_number' | 'debtor' | 'debt_amount' | 'status' | 'due_date' | 'latest_comm' | null;
+  column: 'case_number' | 'debtor' | 'debt_amount' | 'status' | 'due_date' | 'latest_comm' | 'age' | null;
   direction: 'asc' | 'desc';
 };
 
@@ -37,6 +39,7 @@ const fetchDisputes = async () => {
 
   const transformedData = data.map(item => ({
     ...item,
+    age: differenceInDays(new Date(), new Date(item.due_date)),
     latest_comm: item.latest_comm && item.latest_comm.length > 0
       ? { created_at: item.latest_comm.sort((a: { created_at: string }, b: { created_at: string }) => 
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
@@ -109,6 +112,8 @@ const Disputes = () => {
           const aTime = a.latest_comm ? new Date(a.latest_comm.created_at).getTime() : 0;
           const bTime = b.latest_comm ? new Date(b.latest_comm.created_at).getTime() : 0;
           return (aTime - bTime) * direction;
+        case 'age':
+          return (a.age - b.age) * direction;
         default:
           return 0;
       }
@@ -194,6 +199,15 @@ const Disputes = () => {
                   sortConfig.column === 'latest_comm' ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
                 }`} />
               </TableHead>
+              <TableHead 
+                onClick={() => handleSort('age')}
+                className="cursor-pointer group"
+              >
+                Age (days)
+                <ArrowUpDown className={`ml-2 h-4 w-4 inline transition-opacity ${
+                  sortConfig.column === 'age' ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                }`} />
+              </TableHead>
               <TableHead>Dispute Reason</TableHead>
             </TableRow>
           </TableHeader>
@@ -250,6 +264,7 @@ const Disputes = () => {
                       {formatDisputeReason(dispute.dispute_reason)}
                     </Badge>
                   </TableCell>
+                  <TableCell>{dispute.age}</TableCell>
                 </TableRow>
               ))
             )}

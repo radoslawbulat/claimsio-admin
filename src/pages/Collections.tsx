@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { format } from 'date-fns';
+import { format, differenceInDays } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { Search, ArrowUpDown } from "lucide-react";
 import {
@@ -63,9 +63,9 @@ const fetchCasesWithDebtors = async (status: CaseWithDebtor['status'] | 'ALL' | 
 
   if (error) throw error;
   
-  // Transform the data to match our type, properly handling latest communication
   const transformedData = data.map(item => ({
     ...item,
+    age: differenceInDays(new Date(), new Date(item.due_date)),
     latest_comm: item.latest_comm && item.latest_comm.length > 0
       ? { created_at: item.latest_comm.sort((a: { created_at: string }, b: { created_at: string }) => 
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
@@ -73,11 +73,42 @@ const fetchCasesWithDebtors = async (status: CaseWithDebtor['status'] | 'ALL' | 
       : null
   }));
 
-  return transformedData as CaseWithDebtor[];
+  let sortedData = [...transformedData];
+
+  if (sortConfig.column) {
+    sortedData.sort((a, b) => {
+      const direction = sortConfig.direction === 'asc' ? 1 : -1;
+
+      switch (sortConfig.column) {
+        case 'case_number':
+          return a.case_number.localeCompare(b.case_number) * direction;
+        case 'debtor':
+          const aName = a.debtor ? `${a.debtor.first_name} ${a.debtor.last_name}` : '';
+          const bName = b.debtor ? `${b.debtor.first_name} ${b.debtor.last_name}` : '';
+          return aName.localeCompare(bName) * direction;
+        case 'debt_remaining':
+          return (a.debt_remaining - b.debt_remaining) * direction;
+        case 'status':
+          return a.status.localeCompare(b.status) * direction;
+        case 'due_date':
+          return (new Date(a.due_date).getTime() - new Date(b.due_date).getTime()) * direction;
+        case 'latest_comm':
+          const aTime = a.latest_comm ? new Date(a.latest_comm.created_at).getTime() : 0;
+          const bTime = b.latest_comm ? new Date(b.latest_comm.created_at).getTime() : 0;
+          return (aTime - bTime) * direction;
+        case 'age':
+          return (a.age - b.age) * direction;
+        default:
+          return 0;
+      }
+    });
+  }
+
+  return sortedData;
 };
 
 type SortConfig = {
-  column: 'case_number' | 'debtor' | 'debt_remaining' | 'status' | 'due_date' | 'latest_comm' | null;
+  column: 'case_number' | 'debtor' | 'debt_remaining' | 'status' | 'due_date' | 'latest_comm' | 'age' | null;
   direction: 'asc' | 'desc';
 };
 
@@ -135,6 +166,8 @@ const Collections = () => {
           const aTime = a.latest_comm ? new Date(a.latest_comm.created_at).getTime() : 0;
           const bTime = b.latest_comm ? new Date(b.latest_comm.created_at).getTime() : 0;
           return (aTime - bTime) * direction;
+        case 'age':
+          return (a.age - b.age) * direction;
         default:
           return 0;
       }
@@ -228,6 +261,13 @@ const Collections = () => {
                 Last Activity
                 <ArrowUpDown className="ml-2 h-4 w-4 inline opacity-0 group-hover:opacity-100 transition-opacity" />
               </TableHead>
+              <TableHead 
+                onClick={() => handleSort('age')}
+                className="cursor-pointer hover:bg-muted/50 group"
+              >
+                Age (days)
+                <ArrowUpDown className="ml-2 h-4 w-4 inline opacity-0 group-hover:opacity-100 transition-opacity" />
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -266,11 +306,12 @@ const Collections = () => {
                       ? format(new Date(caseItem.latest_comm.created_at), 'MMM d, yyyy, hh:mm:ss a')
                       : 'No activity'}
                   </TableCell>
+                  <TableCell>{caseItem.age}</TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-4">
+                <TableCell colSpan={7} className="text-center py-4">
                   No cases found
                 </TableCell>
               </TableRow>
