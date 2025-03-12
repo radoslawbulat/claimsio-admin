@@ -1,6 +1,7 @@
+
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { format } from 'date-fns';
+import { format, differenceInDays } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { ArrowUpDown } from "lucide-react";
 import {
@@ -28,7 +29,7 @@ const getStatusStyle = (status: CaseWithDebtor['status']) => {
 };
 
 type SortConfig = {
-  column: 'case_number' | 'debtor' | 'debt_remaining' | 'status' | 'due_date' | 'latest_comm' | null;
+  column: 'case_number' | 'debtor' | 'debt_remaining' | 'status' | 'due_date' | 'latest_comm' | 'age' | null;
   direction: 'asc' | 'desc';
 };
 
@@ -68,6 +69,7 @@ const fetchCasesWithDebtors = async (sortConfig: SortConfig) => {
 
   const transformedData = data.map(item => ({
     ...item,
+    age: differenceInDays(new Date(), new Date(item.due_date)),
     latest_comm: item.latest_comm && item.latest_comm.length > 0
       ? { created_at: item.latest_comm.sort((a: { created_at: string }, b: { created_at: string }) => 
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
@@ -91,20 +93,22 @@ const fetchCasesWithDebtors = async (sortConfig: SortConfig) => {
           const aTime = a.latest_comm ? new Date(a.latest_comm.created_at).getTime() : 0;
           const bTime = b.latest_comm ? new Date(b.latest_comm.created_at).getTime() : 0;
           return (aTime - bTime) * direction;
+        case 'age':
+          return (a.age - b.age) * direction;
         default:
           return 0;
       }
     });
   }
 
-  return sortedData as CaseWithDebtor[];
+  return sortedData as (CaseWithDebtor & { age: number })[];
 };
 
 export const CollectionsTable = () => {
   const navigate = useNavigate();
   const [sortConfig, setSortConfig] = useState<SortConfig>({ 
-    column: 'latest_comm', // Set default sort column
-    direction: 'desc'      // Set default sort direction
+    column: 'latest_comm',
+    direction: 'desc'
   });
   
   const { data: cases, isLoading } = useQuery({
@@ -186,6 +190,18 @@ export const CollectionsTable = () => {
             <TableHead 
               onClick={(e) => {
                 e.preventDefault();
+                handleSort('age');
+              }}
+              className="group cursor-pointer"
+            >
+              Age (days)
+              <ArrowUpDown className={`ml-2 h-4 w-4 inline transition-opacity ${
+                sortConfig.column === 'age' ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+              }`} />
+            </TableHead>
+            <TableHead 
+              onClick={(e) => {
+                e.preventDefault();
                 handleSort('due_date');
               }}
               className="group cursor-pointer"
@@ -237,6 +253,7 @@ export const CollectionsTable = () => {
                     {caseItem.status.toLowerCase()}
                   </Badge>
                 </TableCell>
+                <TableCell>{caseItem.age}</TableCell>
                 <TableCell>
                   {format(new Date(caseItem.due_date), 'MMM d, yyyy')}
                 </TableCell>
@@ -249,7 +266,7 @@ export const CollectionsTable = () => {
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={6} className="text-center py-4">
+              <TableCell colSpan={7} className="text-center py-4">
                 No cases found
               </TableCell>
             </TableRow>
