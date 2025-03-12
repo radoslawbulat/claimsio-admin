@@ -197,6 +197,7 @@ const Disputes = () => {
                   sortConfig.column === 'latest_comm' ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
                 }`} />
               </TableHead>
+              <TableHead>Dispute Reason</TableHead>
               <TableHead 
                 onClick={() => handleSort('age')}
                 className="cursor-pointer group"
@@ -206,19 +207,18 @@ const Disputes = () => {
                   sortConfig.column === 'age' ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
                 }`} />
               </TableHead>
-              <TableHead>Dispute Reason</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-4">
+                <TableCell colSpan={8} className="text-center py-4">
                   Loading...
                 </TableCell>
               </TableRow>
             ) : sortedDisputes?.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-4">
+                <TableCell colSpan={8} className="text-center py-4">
                   No disputes found
                 </TableCell>
               </TableRow>
