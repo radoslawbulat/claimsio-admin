@@ -53,7 +53,7 @@ const AppSidebar = () => {
       <SidebarContent>
         <div className="flex items-center h-14 px-4 border-b">
           <img 
-            src="/lovable-uploads/78be5538-a3e1-4fab-a32a-cd69bb587dca.png" 
+            src="/lovable-uploads/387f0ef0-57e8-4d12-b2a7-5ebf8650769a.png" 
             alt="Claimsio" 
             className="h-8"
           />
